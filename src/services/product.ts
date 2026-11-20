@@ -197,12 +197,23 @@ export function getStoredProducts(): any[] {
               if (rawSizeImages[s]) cleanSizeImages[s] = rawSizeImages[s];
             });
 
-            let rawSpaceImages: any = p.spaceImages || p.space_images || p.space_images_json || {};
-            if (typeof rawSpaceImages === "string") {
-              try {
-                rawSpaceImages = JSON.parse(rawSpaceImages);
-              } catch (_) {
-                rawSpaceImages = {};
+            // Pick the FIRST source that actually has entries. An empty object
+            // (e.g. spaceImages: {}) must not shadow a populated space_images_json string.
+            const spaceImageCandidates: any[] = [p.spaceImages, p.space_images, p.space_images_json];
+            let rawSpaceImages: any = {};
+            for (const candidate of spaceImageCandidates) {
+              if (candidate === undefined || candidate === null) continue;
+              let parsed = candidate;
+              if (typeof parsed === "string") {
+                try {
+                  parsed = JSON.parse(parsed);
+                } catch (_) {
+                  continue;
+                }
+              }
+              if (parsed && typeof parsed === "object" && Object.keys(parsed).length > 0) {
+                rawSpaceImages = parsed;
+                break;
               }
             }
             const cleanSpaceImages: Record<string, string> = {};

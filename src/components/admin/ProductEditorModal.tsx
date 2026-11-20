@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import { createPortal } from "react-dom";
 import {
   X,
   Plus,
@@ -1255,14 +1256,28 @@ export function ProductEditorModal({
         ? editingProduct.availableColors
         : (editingProduct.color && !isSpecUnspecified(editingProduct.color) ? [editingProduct.color] : []);
 
+      // Pick the FIRST source that actually has entries. An empty object
+      // (e.g. spaceImages: {}) must not shadow a populated space_images_json string.
       let initialSpaceImages: Record<string, string> = {};
-      const rawSp = (editingProduct as any).spaceImages || (editingProduct as any).space_images || (editingProduct as any).space_images_json;
-      if (typeof rawSp === "string") {
-        try {
-          initialSpaceImages = JSON.parse(rawSp);
-        } catch (_) {}
-      } else if (rawSp && typeof rawSp === "object") {
-        initialSpaceImages = { ...rawSp };
+      const rawSpCandidates = [
+        (editingProduct as any).spaceImages,
+        (editingProduct as any).space_images,
+        (editingProduct as any).space_images_json,
+      ];
+      for (const candidate of rawSpCandidates) {
+        if (candidate === undefined || candidate === null) continue;
+        let parsed: any = candidate;
+        if (typeof parsed === "string") {
+          try {
+            parsed = JSON.parse(parsed);
+          } catch (_) {
+            continue;
+          }
+        }
+        if (parsed && typeof parsed === "object" && Object.keys(parsed).length > 0) {
+          initialSpaceImages = { ...parsed };
+          break;
+        }
       }
 
       const initialData: Partial<ProductItem> = {
@@ -1807,9 +1822,9 @@ export function ProductEditorModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-hidden">
-      <div className="bg-[#0b101d] border border-white/10 rounded-2xl sm:rounded-3xl max-w-4xl w-full h-[95vh] max-h-[95vh] flex flex-col shadow-2xl overflow-hidden relative">
+  return createPortal(
+    <div className="dark-scrollbars fixed inset-0 z-[9999] backdrop-blur-lg flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-hidden">
+      <div className="bg-[#0b101d] border border-white/10 rounded-2xl sm:rounded-3xl max-w-4xl w-full h-full max-h-full flex flex-col shadow-2xl overflow-hidden relative">
         {/* Modal Top Bar */}
         <div className="shrink-0 p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-[#0e1628]/95 z-20">
           <div>
@@ -4280,6 +4295,7 @@ export function ProductEditorModal({
           </div>
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -5,6 +5,8 @@ import { getBlogs } from "@/services/blog";
 import { BlogsListClient } from "./BlogsListClient";
 import { getSeoMetadata, buildPageMetadata } from "@/services/seo";
 
+export const revalidate = 10;
+
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSeoMetadata("/blogs");
   return buildPageMetadata(seo);

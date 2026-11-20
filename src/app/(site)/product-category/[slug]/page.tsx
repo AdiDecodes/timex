@@ -17,6 +17,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const revalidate = 10;
+
 export async function generateStaticParams() {
   const { getAllCollections } = await import("@/data/collections");
   const collections = getAllCollections();

@@ -102,17 +102,26 @@ router.get("/", (req, res) => {
       ...trashedPages,
     ].sort((a, b) => new Date(b.deleted_at).getTime() - new Date(a.deleted_at).getTime());
 
+    // Optional type filter (admin tabs send "products" | "blogs" | "media" | "pages")
+    const typeFilter = (req.query.type || "").toString().toLowerCase().replace(/s$/, "");
+    const filtered =
+      typeFilter && typeFilter !== "all"
+        ? allTrashed.filter((item) => item.type.toLowerCase() === typeFilter)
+        : allTrashed;
+
+    const stats = {
+      total: allTrashed.length,
+      products: trashedProducts.length,
+      blogs: trashedBlogs.length,
+      media: trashedMedia.length,
+      pages: trashedPages.length,
+    };
+
     return res.json({
       success: true,
-      count: allTrashed.length,
-      items: allTrashed,
-      stats: {
-        total: allTrashed.length,
-        products: trashedProducts.length,
-        blogs: trashedBlogs.length,
-        media: trashedMedia.length,
-        pages: trashedPages.length,
-      },
+      count: filtered.length,
+      items: filtered,
+      stats,
     });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
@@ -270,8 +279,8 @@ router.delete("/permanent", (req, res) => {
       const media = store.media[idx];
       const usage = calculateMediaUsage(media.url, store);
 
-      // Block permanent deletion if active references exist
-      if (usage.activeCount > 0) {
+      // Block permanent deletion if active references exist (unless force=true)
+      if (usage.activeCount > 0 && req.body?.force !== true) {
         const activeNames = usage.usedBy
           .filter((u) => !u.is_trashed)
           .map((u) => `${u.name} (${u.type})`)
@@ -307,56 +316,68 @@ router.delete("/permanent", (req, res) => {
 });
 
 // POST /api/v1/trash/empty (Empty Recycle Bin)
+// Optional body { type: "products"|"blogs"|"media"|"pages" } — empties only that type; omits = everything.
 router.post("/empty", (req, res) => {
   try {
     const store = loadFallbackStore();
     seedInitialMedia(store);
 
+    const rawType = (req.body?.type || "").toString().toLowerCase().replace(/s$/, "");
+    const shouldDelete = (entityType) => !rawType || rawType === "all" || entityType === rawType;
+
     let deletedCount = 0;
 
     // 1. Delete trashed products
-    const remainingProducts = (store.products || []).filter((p) => {
-      if (p.is_trashed) {
-        deletedCount++;
-        return false;
-      }
-      return true;
-    });
-    store.products = remainingProducts;
-
-    // 2. Delete trashed blogs
-    const remainingBlogs = (store.blogs || []).filter((b) => {
-      if (b.is_trashed) {
-        deletedCount++;
-        return false;
-      }
-      return true;
-    });
-    store.blogs = remainingBlogs;
-
-    // 3. Delete trashed media safely (only if not used by active items)
-    const remainingMedia = (store.media || []).filter((m) => {
-      if (m.is_trashed) {
-        const usage = calculateMediaUsage(m.url, store);
-        if (usage.activeCount === 0) {
-          safeDeleteMediaFile(m, store);
+    if (shouldDelete("product")) {
+      const remainingProducts = (store.products || []).filter((p) => {
+        if (p.is_trashed) {
           deletedCount++;
           return false;
         }
-      }
-      return true;
-    });
-    store.media = remainingMedia;
+        return true;
+      });
+      store.products = remainingProducts;
+    }
+
+    // 2. Delete trashed blogs
+    if (shouldDelete("blog")) {
+      const remainingBlogs = (store.blogs || []).filter((b) => {
+        if (b.is_trashed) {
+          deletedCount++;
+          return false;
+        }
+        return true;
+      });
+      store.blogs = remainingBlogs;
+    }
+
+    // 3. Delete trashed media safely (only if not used by active items)
+    if (shouldDelete("media")) {
+      const remainingMedia = (store.media || []).filter((m) => {
+        if (m.is_trashed) {
+          const usage = calculateMediaUsage(m.url, store);
+          if (usage.activeCount === 0) {
+            safeDeleteMediaFile(m, store);
+            deletedCount++;
+            return false;
+          }
+        }
+        return true;
+      });
+      store.media = remainingMedia;
+    }
 
     // 4. Delete trashed pages
-    const remainingPages = (store.pages || []).filter((p) => {
-      if (p.is_trashed) {
-        deletedCount++;
-        return false;
-      }
-      return true;
-    });
-    store.pages = remainingPages;
+    if (shouldDelete("page")) {
+      const remainingPages = (store.pages || []).filter((p) => {
+        if (p.is_trashed) {
+          deletedCount++;
+          return false;
+        }
+        return true;
+      });
+      store.pages = remainingPages;
+    }
 
     saveFallbackStore(store);
     return res.json({

@@ -10,6 +10,8 @@ import { BlogDetailClient } from "./BlogDetailClient";
 import type { Metadata } from "next";
 import { getSeoMetadata, buildPageMetadata } from "@/services/seo";
 
+export const revalidate = 10;
+
 export async function generateStaticParams() {
   const blogs = await getBlogs();
   const { BLOG_POSTS } = await import("@/data/blogs");

@@ -405,18 +405,30 @@ function normalizeProduct(raw = {}, existing = {}, isNew = false) {
     "swimming pool tiles": "swimming-pool-tiles",
   };
 
-  let rawSpaceImages = raw.spaceImages !== undefined
-    ? raw.spaceImages
-    : (raw.space_images !== undefined
-        ? raw.space_images
-        : (raw.space_images_json !== undefined
-            ? raw.space_images_json
-            : (existing.spaceImages || existing.space_images || existing.space_images_json || {})));
-  if (typeof rawSpaceImages === "string") {
-    try {
-      rawSpaceImages = JSON.parse(rawSpaceImages);
-    } catch (_) {
-      rawSpaceImages = {};
+  // Pick the FIRST space-image source that actually has entries.
+  // An empty object (e.g. spaceImages: {}) must NOT shadow a populated space_images_json string.
+  const spaceImageCandidates = [
+    raw.spaceImages,
+    raw.space_images,
+    raw.space_images_json,
+    existing.spaceImages,
+    existing.space_images,
+    existing.space_images_json,
+  ];
+  let rawSpaceImages = {};
+  for (const candidate of spaceImageCandidates) {
+    if (candidate === undefined || candidate === null) continue;
+    let parsed = candidate;
+    if (typeof parsed === "string") {
+      try {
+        parsed = JSON.parse(parsed);
+      } catch (_) {
+        continue;
+      }
+    }
+    if (parsed && typeof parsed === "object" && Object.keys(parsed).length > 0) {
+      rawSpaceImages = parsed;
+      break;
     }
   }
 

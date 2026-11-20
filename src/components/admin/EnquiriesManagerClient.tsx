@@ -67,7 +67,7 @@ export function EnquiriesManagerClient() {
 
   const handleStatusChange = async (id: string, newStatus: "PENDING" | "IN_PROGRESS" | "RESOLVED") => {
     try {
-      const res = await fetch(`${API_BASE}/enquiries/${id}`, {
+      const res = await fetch(`${API_BASE}/enquiries/${id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
@@ -79,6 +79,8 @@ export function EnquiriesManagerClient() {
           setSelectedEnquiry({ ...selectedEnquiry, status: newStatus });
         }
         showToast(`Status updated to ${newStatus}`);
+      } else {
+        showToast(data.error || "Failed to update status");
       }
     } catch (err) {
       console.error("Failed to update enquiry status:", err);

@@ -226,6 +226,7 @@ export function ProductCategoriesManagerClient() {
         showNotification("success", `Category "${payload.name}" saved successfully.`);
         setIsModalOpen(false);
         fetchCategories();
+        window.dispatchEvent(new CustomEvent("timex-taxonomy-updated"));
       } else {
         showNotification("error", data.message || "Failed to save category.");
       }

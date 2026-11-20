@@ -131,6 +131,7 @@ export function ColorsManagerClient() {
           showNotification("success", `Color "${formName.trim()}" updated successfully.`);
           setIsModalOpen(false);
           await loadData();
+          window.dispatchEvent(new CustomEvent("timex-taxonomy-updated"));
         } else {
           showNotification("error", res.error || "Failed to update color.");
         }
@@ -146,6 +147,7 @@ export function ColorsManagerClient() {
           showNotification("success", `Color "${formName.trim()}" created successfully.`);
           setIsModalOpen(false);
           await loadData();
+          window.dispatchEvent(new CustomEvent("timex-taxonomy-updated"));
         } else {
           showNotification("error", res.error || "Failed to create color.");
         }
@@ -195,6 +197,7 @@ export function ColorsManagerClient() {
         showNotification("success", `Color "${deleteTarget.name}" deleted successfully.`);
         setDeleteTarget(null);
         await loadData();
+        window.dispatchEvent(new CustomEvent("timex-taxonomy-updated"));
       } else {
         showNotification("error", res.error || "Failed to delete color.");
       }

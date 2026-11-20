@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Reveal } from "@/components/animations/Reveal";
 import { Download, FileText, LayoutGrid, X, Check } from "lucide-react";
 import Card from "@/components/ui/Card";
@@ -27,12 +27,31 @@ export function DownloadsClient() {
   const [success, setSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const catalogs = [
+  const [catalogs, setCatalogs] = useState([
     { title: "Harlem Series Catalogue 2026", type: "PDF Format", size: "1.0 MB", pdfUrl: "/catalogue/harlem-series.pdf" },
     { title: "General Product Catalog 2026", type: "PDF Format", size: "1.0 MB", pdfUrl: "/catalogue/harlem-series.pdf" },
     { title: "Stone & Marble Look Slabs", type: "PDF Format", size: "1.0 MB", pdfUrl: "/catalogue/harlem-series.pdf" },
     { title: "Artisanal Moroccan Series", type: "PDF Format", size: "1.0 MB", pdfUrl: "/catalogue/harlem-series.pdf" }
-  ];
+  ]);
+
+  // Live rehydration: replace static list with admin-uploaded catalogues
+  useEffect(() => {
+    fetch("/api/v1/catalogues")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (json?.success && Array.isArray(json.catalogues) && json.catalogues.length > 0) {
+          setCatalogs(
+            json.catalogues.map((c: any) => ({
+              title: c.name,
+              type: "PDF Format",
+              size: c.sizeFormatted || "",
+              pdfUrl: c.url,
+            }))
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const bimModels = [
     { title: "800x1600mm Floor Slabs BIM", type: "Revit Model (.RFA)", size: "4.8 MB" },

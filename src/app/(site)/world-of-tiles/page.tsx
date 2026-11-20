@@ -6,6 +6,7 @@ import { getWorldOfTilesCategories, resolveCategoryImage } from "@/services/cate
 import { WorldOfTilesClient } from "@/components/products/WorldOfTilesClient";
 
 export const dynamic = "auto";
+export const revalidate = 10;
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSeoMetadata("/world-of-tiles");

@@ -14,6 +14,7 @@ interface PageProps {
 }
 
 export const dynamicParams = true;
+export const revalidate = 10;
 
 const EXISTING_STATIC_SLUGS = new Set([
   "bathroom-tiles",

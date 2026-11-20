@@ -10,6 +10,8 @@ interface PageProps {
   }>;
 }
 
+export const revalidate = 10;
+
 export async function generateStaticParams() {
   const products = await getProducts({ includeInactive: true });
   const { MOCK_PRODUCTS } = await import("@/data/products");
