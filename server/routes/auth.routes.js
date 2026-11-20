@@ -15,7 +15,7 @@ const loginAttempts = new Map(); // key: `${ip}_${identifier}`, value: { count: 
 
 function checkRateLimit(ip, identifier) {
   const key = `${ip}_${(identifier || "").toLowerCase().trim()}`;
-  const record = loginAttemp ts.get(key);
+  const record = loginAttempts.get(key);
   if (!record) return { locked: false };
 
   if (record.lockedUntil && Date.now() < record.lockedUntil) {

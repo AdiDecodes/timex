@@ -198,9 +198,13 @@ router.get("/", (req, res) => {
 
     let mediaList = Array.isArray(store.media) ? store.media : [];
     const includeTrashed = req.query.includeTrashed === "true";
-    const fileType = req.query.fileType || "all";
+    // Accept both `fileType` and `type` (the admin UI sends `type`)
+    const fileType = req.query.fileType || req.query.type || "all";
     const search = (req.query.search || "").toLowerCase().trim();
-    const sort = req.query.sort || "newest";
+    const rawSort = req.query.sort || "newest";
+    // Map legacy short sort names used by the admin UI
+    const sortAliases = { name: "name_asc", size: "size_desc" };
+    const sort = sortAliases[rawSort] || rawSort;
 
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = req.query.limit !== undefined ? Math.max(0, parseInt(req.query.limit)) : 0;
@@ -478,7 +482,8 @@ router.delete("/:id/permanent", (req, res) => {
     const usage = calculateMediaUsage(media.url, store);
 
     // SAFETY CHECK: If still used by ACTIVE non-trashed items, prevent permanent file deletion
-    if (usage.activeCount > 0) {
+    // (unless force=true is supplied, matching the admin UI's override checkbox)
+    if (usage.activeCount > 0 && req.query.force !== "true") {
       const activeNames = usage.usedBy
         .filter((u) => !u.is_trashed)
         .map((u) => `${u.name} (${u.type})`)

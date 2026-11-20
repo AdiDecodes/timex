@@ -4,7 +4,7 @@ import { getProducts } from "@/services/product";
 import { getBlogs } from "@/services/blog";
 import { getStoredSpaces } from "@/services/spaces";
 
-export const dynamic = "force-static";
+export const revalidate = 60;
 
 const CORE_STATIC_ROUTES = [
   "",

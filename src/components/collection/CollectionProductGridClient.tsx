@@ -68,9 +68,8 @@ export function CollectionProductGridClient({
             return true;
           });
 
-          if (matched.length > 0) {
-            setProducts(matched);
-          }
+          // Always sync, including empty results, so removals/deactivations reflect
+          setProducts(matched);
         }
       })
       .catch(() => {});

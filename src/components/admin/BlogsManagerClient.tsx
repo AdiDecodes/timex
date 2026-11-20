@@ -28,6 +28,7 @@ export function BlogsManagerClient() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
+  const [blogCategories, setBlogCategories] = useState<string[]>(BLOG_CATEGORIES);
 
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,6 +65,22 @@ export function BlogsManagerClient() {
 
   useEffect(() => {
     fetchBlogs();
+
+    // Load dynamic blog categories (same source as the blog editor)
+    fetch(`${API_BASE}/taxonomies/blog-categories?_t=${Date.now()}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        const rows = data?.categories || data?.data || data?.blogCategories;
+        if (Array.isArray(rows) && rows.length > 0) {
+          const names = rows
+            .map((c: any) => (typeof c === "string" ? c : c.name || c.title || c.label))
+            .filter(Boolean)
+            .map((n: string) => String(n).toUpperCase().trim());
+          const merged = Array.from(new Set([...names, ...BLOG_CATEGORIES]));
+          if (merged.length > 0) setBlogCategories(merged);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const handleOpenAdd = () => {

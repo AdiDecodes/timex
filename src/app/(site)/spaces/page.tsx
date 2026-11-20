@@ -9,6 +9,7 @@ import { SpaceItem } from "@/types/spaces";
 import { getSeoMetadata, buildPageMetadata } from "@/services/seo";
 
 export const dynamic = "auto";
+export const revalidate = 10;
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSeoMetadata("/spaces");

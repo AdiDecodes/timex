@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getSpaceBySlug, getProductsForSpace, generateSpaceMetadata } from "@/services/spaces";
 import { SpaceTilesPage } from "@/components/space/SpaceTilesPage";
 
-export const dynamic = "force-static";
+export const revalidate = 10;
 
 export async function generateMetadata() {
   return generateSpaceMetadata("kitchen-tiles");

@@ -75,27 +75,59 @@ export function WatchAndChooseClient() {
   const [visibleCount, setVisibleCount] = useState<number>(ITEMS_PER_PAGE);
   const [activeItem, setActiveItem] = useState<WatchAndChooseItem | null>(null);
   const [mounted, setMounted] = useState<boolean>(false);
+  const [videos, setVideos] = useState<WatchAndChooseItem[]>(WATCH_AND_CHOOSE_VIDEOS);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Compute category item counts across all 217 items
+  // Live rehydration: load admin-managed videos from the API, keeping the
+  // static list as fallback while it loads or if the API is unreachable.
+  useEffect(() => {
+    fetch("/api/v1/videos")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (json?.success && Array.isArray(json.data) && json.data.length > 0) {
+          const normalized: WatchAndChooseItem[] = json.data
+            .filter((v: any) => !v.is_trashed && (v.status || "published") === "published")
+            .map((v: any) => ({
+              id: v.id,
+              order: Number(v.order) || 0,
+              platform: v.platform,
+              postType: v.post_type || v.postType || "Short",
+              url: v.url,
+              videoId: v.video_id || v.videoId,
+              shortcode: v.shortcode,
+              categories: v.categories || [],
+              thumbnail: v.thumbnail,
+              hqThumbnail: v.hq_thumbnail || v.hqThumbnail,
+              embedUrl: v.embed_url || v.embedUrl,
+              status: v.status || "published",
+            }));
+          if (normalized.length > 0) {
+            setVideos(normalized);
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Compute category item counts
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {
-      "ALL VIDEOS": WATCH_AND_CHOOSE_VIDEOS.length,
+      "ALL VIDEOS": videos.length,
     };
     WATCH_AND_CHOOSE_CATEGORIES.forEach((cat) => {
       if (cat !== "ALL VIDEOS") {
-        counts[cat] = WATCH_AND_CHOOSE_VIDEOS.filter((v) => v.categories.includes(cat)).length;
+        counts[cat] = videos.filter((v) => v.categories.includes(cat)).length;
       }
     });
     return counts;
-  }, []);
+  }, [videos]);
 
   // Filtered dataset based on Category, Platform, and Search
   const filteredItems = useMemo(() => {
-    return WATCH_AND_CHOOSE_VIDEOS.filter((item) => {
+    return videos.filter((item) => {
       // 1. Category filter
       if (activeCategory !== "ALL VIDEOS" && !item.categories.includes(activeCategory)) {
         return false;
@@ -369,7 +401,7 @@ export function WatchAndChooseClient() {
               }}
               className="px-4 py-2 bg-[#101B38] text-white text-xs font-semibold uppercase tracking-wider rounded-[2px] hover:bg-[#C95745] transition-colors"
             >
-              Show All 217 Videos
+              Show All {videos.length} Videos
             </button>
           </div>
         ) : (

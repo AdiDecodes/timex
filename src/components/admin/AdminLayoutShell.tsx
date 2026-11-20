@@ -151,7 +151,7 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#070b14] text-white flex flex-col font-sans relative selection:bg-[#c5a880] selection:text-black">
+    <div className="dark-scrollbars min-h-screen bg-[#070b14] text-white flex flex-col font-sans relative selection:bg-[#c5a880] selection:text-black">
       {/* Top Sticky Header */}
       <header className="bg-[#0d1424] border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center space-x-3">

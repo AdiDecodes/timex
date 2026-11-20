@@ -305,11 +305,24 @@ function cleanSpaceKey(str?: string): string {
 export function getProductSpaceImage(product: any, spaceNameOrSlug?: string): string | null {
   if (!product || !spaceNameOrSlug || typeof spaceNameOrSlug !== "string") return null;
 
-  let map = product.spaceImages || product.space_images;
-  if (!map && typeof product.space_images_json === "string") {
-    try {
-      map = JSON.parse(product.space_images_json);
-    } catch (_) {}
+  // Pick the FIRST source that actually has entries. An empty object
+  // (e.g. spaceImages: {}) must not shadow a populated space_images_json string.
+  const candidates = [product.spaceImages, product.space_images, product.space_images_json];
+  let map: any = null;
+  for (const candidate of candidates) {
+    if (candidate === undefined || candidate === null) continue;
+    let parsed = candidate;
+    if (typeof parsed === "string") {
+      try {
+        parsed = JSON.parse(parsed);
+      } catch (_) {
+        continue;
+      }
+    }
+    if (parsed && typeof parsed === "object" && Object.keys(parsed).length > 0) {
+      map = parsed;
+      break;
+    }
   }
   if (!map || typeof map !== "object") return null;
 

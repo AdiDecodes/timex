@@ -83,6 +83,31 @@ h1, h2, h3, .font-heading, .editorial-heading {
   background: #101B38;
 }
 
+/* Dark Scrollbars (admin panel & dark modals) */
+.dark-scrollbars,
+.dark-scrollbars * {
+  scrollbar-width: thin;
+  scrollbar-color: #263352 transparent;
+}
+.dark-scrollbars::-webkit-scrollbar,
+.dark-scrollbars *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.dark-scrollbars::-webkit-scrollbar-track,
+.dark-scrollbars *::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dark-scrollbars::-webkit-scrollbar-thumb,
+.dark-scrollbars *::-webkit-scrollbar-thumb {
+  background: #263352;
+  border-radius: 8px;
+}
+.dark-scrollbars::-webkit-scrollbar-thumb:hover,
+.dark-scrollbars *::-webkit-scrollbar-thumb:hover {
+  background: #c5a880;
+}
+
 /* Clean Editorial Utilities */
 .bg-warm-offwhite { background-color: #F7F5F0; }
 .bg-light-stone { background-color: #EDEAE4; }

@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { getGlobalSeoSettings } from "@/services/seo";
 
-export const dynamic = "force-static";
+export const revalidate = 60;
 
 export default function robots(): MetadataRoute.Robots {
   const settings = getGlobalSeoSettings();

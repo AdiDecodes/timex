@@ -4,15 +4,138 @@
       "id": "admin-1790593906933",
       "username": "Timex-ceramic",
       "email": "webmaster@ambestmedia.com",
-      "password_hash": "$2b$12$OMTWPwEHH1SD8IqhuSKubuEPpIIAUywjxTRkX76ycxVPL5nZNHm86",
+      "password_hash": "$2b$12$OG.nNeFcI8uAHukDAQvcYeE0Yxr5z6yC2WKbI44YVAcz1maNoKsVq",
       "role": "ADMIN",
       "setup_completed": true,
       "created_at": "2026-09-28T11:11:46.933Z",
-      "updated_at": "2026-09-28T11:11:46.933Z"
+      "updated_at": "2026-11-20T15:18:30.046Z"
     }
   ],
   "password_resets": [],
   "products": [
+    {
+      "id": "prod-1795190433926-7f0f64",
+      "slug": "e2e-test-product-1795190433671",
+      "name": "E2E Test Product 1795190433671",
+      "code": "E2E-1795190433671",
+      "sku": "TMX-SKU-E2E-1795190433671",
+      "barcode": "",
+      "description": "x",
+      "price": 199,
+      "b2b_price": 0,
+      "b2bPrice": 0,
+      "inventory": 100,
+      "category_id": "stone",
+      "categoryId": "stone",
+      "category_name": "Stone Look",
+      "category": "Stone Look",
+      "collection_id": "coll-stone",
+      "collectionId": "coll-stone",
+      "collection_name": "Stone Collection",
+      "collection": "Stone Collection",
+      "secondaryCategories": [],
+      "secondary_categories": [],
+      "secondary_categories_json": "[]",
+      "subcategories": [],
+      "subcategories_json": "[]",
+      "size": "600x1200mm",
+      "availableSizes": [
+        "600x1200mm"
+      ],
+      "thickness": "",
+      "finish": "",
+      "look": "",
+      "surface": "",
+      "material": "",
+      "origin": "",
+      "color": "Beige",
+      "availableColors": [
+        "Beige",
+        "Grey"
+      ],
+      "colorImages": {},
+      "colorHexes": {},
+      "color_hexes": {},
+      "sizeImages": {},
+      "spaceImages": {
+        "Bathroom Tiles": "/uploads/products/Insert-73x73-Cotto.webp",
+        "bathroom-tiles": "/uploads/products/Insert-73x73-Cotto.webp"
+      },
+      "space_images": {
+        "Bathroom Tiles": "/uploads/products/Insert-73x73-Cotto.webp",
+        "bathroom-tiles": "/uploads/products/Insert-73x73-Cotto.webp"
+      },
+      "space_images_json": "{\"Bathroom Tiles\":\"/uploads/products/Insert-73x73-Cotto.webp\",\"bathroom-tiles\":\"/uploads/products/Insert-73x73-Cotto.webp\"}",
+      "combinationImages": {},
+      "combinationProductMappings": [],
+      "combination_product_mappings": [],
+      "edgeType": "",
+      "edge_type": "",
+      "application": "",
+      "usage": "",
+      "pattern": "",
+      "tilePattern": "",
+      "tilesBySpace": "Bathroom Tiles, Kitchen Tiles",
+      "tiles_by_space": "Bathroom Tiles, Kitchen Tiles",
+      "spaceArea": "Bathroom Tiles, Kitchen Tiles",
+      "spaces": [
+        "Bathroom Tiles",
+        "Kitchen Tiles"
+      ],
+      "catalogueMediaId": "",
+      "catalogue_media_id": "",
+      "catalogue": "",
+      "catalogueUrl": "",
+      "catalogue_url": "",
+      "catalogueName": "",
+      "catalogue_name": "",
+      "productPdf": "",
+      "videoUrl": "",
+      "video_url": "",
+      "videoPosition": 1,
+      "video_position": 1,
+      "videoEnabled": false,
+      "video_enabled": false,
+      "kgPerBox": "",
+      "kg_per_box": "",
+      "weight": "",
+      "pcsPerBox": "",
+      "pcs_per_box": "",
+      "packingDetails": "",
+      "sftPerBox": "",
+      "sft_per_box": "",
+      "sqftPerBox": "",
+      "shape": "",
+      "shapes": [],
+      "tilesByShape": "",
+      "tiles_by_shape": "",
+      "customShape": "",
+      "custom_shape": "",
+      "tilesBySize": "",
+      "tiles_by_size": "",
+      "tilesBySizeList": [],
+      "customTilesBySize": "",
+      "custom_tiles_by_size": "",
+      "images": [],
+      "is_active": false,
+      "isActive": true,
+      "isNewArrival": true,
+      "is_new_arrival": true,
+      "isBestseller": false,
+      "is_bestseller": false,
+      "showTileOfSpainBadge": false,
+      "show_tile_of_spain_badge": false,
+      "is_trashed": true,
+      "deleted_at": "2026-11-20T16:17:07.813Z",
+      "deleted_by": "admin",
+      "meta_title": "E2E Test Product 1795190433671 | Timex Ceramic",
+      "metaTitle": "E2E Test Product 1795190433671 | Timex Ceramic",
+      "meta_description": "x",
+      "metaDescription": "x",
+      "keywords": "E2E Test Product 1795190433671, Stone Look, tiles, timex ceramic",
+      "created_at": "2026-11-20T16:00:34.163Z",
+      "updated_at": "2026-11-20T16:08:25.290Z"
+    },
     {
       "id": "prod-1794987593915-c37717",
       "slug": "zelij",
@@ -76,7 +199,7 @@
       "sizeImages": {},
       "spaceImages": {},
       "space_images": {},
-      "space_images_json": "{}",
+      "space_images_json": "{\"Bathroom Tiles\":\"/uploads/products/Amb-Zelij-Special-antic-azul-10x10.webp\",\"bathroom-tiles\":\"/uploads/products/Amb-Zelij-Special-antic-azul-10x10.webp\"}",
       "combinationImages": {},
       "combinationProductMappings": [],
       "combination_product_mappings": [],
@@ -166,7 +289,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Zelij, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-11-18T07:39:53.917Z",
-      "updated_at": "2026-11-20T14:36:14.665Z"
+      "updated_at": "2026-11-20T16:19:00.622Z"
     },
     {
       "id": "prod-1794297416563-c3454d",
@@ -326,7 +449,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Raku Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-11-10T07:56:56.564Z",
-      "updated_at": "2026-11-20T14:36:14.665Z"
+      "updated_at": "2026-11-20T16:19:00.622Z"
     },
     {
       "id": "prod-1794288135963-aee0e4",
@@ -474,7 +597,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "9005-06 Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-11-10T05:22:15.964Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -602,7 +725,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "208 Highlighter, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-11-10T05:12:13.403Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -736,7 +859,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Combo Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-11-03T07:30:29.425Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -906,7 +1029,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "STP 36X6, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-28T12:43:09.718Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -1075,7 +1198,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Manises, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-28T12:35:57.634Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -1218,7 +1341,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Veranda Series , Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-28T12:10:42.745Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -1348,7 +1471,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Veracruz Matt , Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-28T12:01:18.716Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "showTileOfSpainBadge": false,
       "show_tile_of_spain_badge": false,
       "spaceImages": {},
@@ -1484,7 +1607,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Teguise Series , Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-28T11:54:12.817Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -1630,7 +1753,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Taipei Series , Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-28T11:38:10.919Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -1783,7 +1906,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Season Series , Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-28T10:55:54.366Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -1935,7 +2058,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Lagoon Series , Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-28T10:50:51.787Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -2114,7 +2237,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Yoko & Origami Series, timex ceramic",
       "created_at": "2026-10-26T06:02:18.822Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -2286,7 +2409,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Vitral, timex ceramic",
       "created_at": "2026-10-26T05:03:18.069Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -2429,7 +2552,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "SW 21-23 Series, timex ceramic",
       "created_at": "2026-10-24T12:13:15.748Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -2599,7 +2722,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Rebel , timex ceramic",
       "created_at": "2026-10-24T12:01:37.714Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -2758,7 +2881,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Radiance Series , timex ceramic",
       "created_at": "2026-10-24T11:42:08.620Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -2902,7 +3025,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Spica Series , timex ceramic",
       "created_at": "2026-10-24T07:16:50.009Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -3056,7 +3179,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Ruanes Series , timex ceramic",
       "created_at": "2026-10-24T06:52:44.432Z",
-      "updated_at": "2026-11-20T14:36:14.665Z"
+      "updated_at": "2026-11-20T16:19:00.622Z"
     },
     {
       "id": "prod-1792762782935-cae705",
@@ -3275,7 +3398,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Veracruz Hexagon Matt , timex ceramic",
       "created_at": "2026-10-23T13:39:42.940Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -3527,7 +3650,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Vestige Series, timex ceramic",
       "created_at": "2026-10-23T08:38:31.223Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -3759,7 +3882,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Venezia Series, timex ceramic",
       "created_at": "2026-10-23T08:03:44.950Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -3906,7 +4029,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Phuket Series, timex ceramic",
       "created_at": "2026-10-20T09:12:22.682Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -4039,7 +4162,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Phuket Series, timex ceramic",
       "created_at": "2026-10-20T09:08:08.189Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -4174,7 +4297,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Pencel, timex ceramic",
       "created_at": "2026-10-20T08:17:16.189Z",
-      "updated_at": "2026-11-20T14:36:14.665Z"
+      "updated_at": "2026-11-20T16:19:00.622Z"
     },
     {
       "id": "prod-1792483620215-4871f5",
@@ -4321,7 +4444,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Ordesa, timex ceramic",
       "created_at": "2026-10-20T08:07:00.216Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -4502,7 +4625,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Nolita, timex ceramic",
       "created_at": "2026-10-20T07:54:33.662Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -4638,7 +4761,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Next Series, timex ceramic",
       "created_at": "2026-10-20T07:18:28.237Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -4805,7 +4928,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Nara (Matt), tiles, timex ceramic",
       "created_at": "2026-10-20T07:08:12.945Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -4959,7 +5082,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Musa, tiles, timex ceramic",
       "created_at": "2026-10-20T06:53:11.822Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.622Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -5101,7 +5224,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Moves Series, tiles, timex ceramic",
       "created_at": "2026-10-20T06:47:30.415Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "showTileOfSpainBadge": false,
       "show_tile_of_spain_badge": false,
       "spaceImages": {},
@@ -5260,7 +5383,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Modula Series, tiles, timex ceramic",
       "created_at": "2026-10-20T06:36:28.916Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -5423,7 +5546,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Match, timex ceramic",
       "created_at": "2026-10-20T06:20:01.003Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -5579,7 +5702,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Marly Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-20T06:13:06.960Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -5721,7 +5844,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Manises, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-20T06:06:31.043Z",
-      "updated_at": "2026-11-20T14:36:14.665Z"
+      "updated_at": "2026-11-20T16:19:00.623Z"
     },
     {
       "id": "prod-1792475653349-7367ba",
@@ -5877,7 +6000,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Majestic Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-20T05:54:13.349Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -6034,7 +6157,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Majestic Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-20T04:57:44.852Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -6204,7 +6327,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Grace O, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-19T12:31:21.668Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -6349,7 +6472,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Lancaste, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-19T12:12:04.521Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -6502,7 +6625,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Grace O, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-19T11:55:13.781Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -6647,7 +6770,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Irazu, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-19T11:02:20.865Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -6802,7 +6925,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Grace O, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-19T10:22:12.311Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -6955,7 +7078,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Hexagon, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-19T10:10:18.442Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -7107,7 +7230,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "GM 91 To 94, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-19T09:04:43.092Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -7258,7 +7381,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "GM 81 To 84, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-19T07:34:25.521Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -7404,7 +7527,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "GM 71 To 73, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-19T07:17:19.924Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -7545,7 +7668,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "GM 61 To 63, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-19T06:42:57.598Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -7701,7 +7824,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "GM 51 To 56 Solid Metal, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-15T07:33:43.617Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -7855,7 +7978,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "GM 31–35 Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-15T07:16:38.957Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -7998,7 +8121,7 @@
       "metaDescription": "Earthy forms & expressive surfaces\nFor distinctive architectural compositions.",
       "keywords": "Pigmenta Series, Brick Look, tiles, timex ceramic",
       "created_at": "2026-10-12T12:02:49.577Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -8134,7 +8257,7 @@
       "metaDescription": "Earthy forms & expressive surfaces\nFor distinctive architectural compositions.",
       "keywords": "Nazca Series, Brick Look, tiles, timex ceramic",
       "created_at": "2026-10-12T11:56:35.670Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -8288,7 +8411,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "GM 21-25, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T16:01:30.311Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -8445,7 +8568,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "GM 11-15, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T15:53:20.006Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -8604,7 +8727,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "GM 01-05, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T15:25:54.447Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -8771,7 +8894,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Glow Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T15:15:21.767Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -8938,7 +9061,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Country Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T15:03:18.467Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -9084,7 +9207,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Flagstone, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T10:14:59.195Z",
-      "updated_at": "2026-11-20T14:36:14.665Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -9251,7 +9374,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Fables Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T10:06:27.730Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -9417,7 +9540,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Etna, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T09:58:09.621Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.623Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -9569,7 +9692,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Elegance Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T09:50:49.716Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -9798,7 +9921,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "DR, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T09:37:49.230Z",
-      "updated_at": "2026-11-20T14:36:14.666Z"
+      "updated_at": "2026-11-20T16:19:00.624Z"
     },
     {
       "id": "prod-1791624677526-413c83",
@@ -10003,7 +10126,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "DR & SW -101 and 102, timex ceramic",
       "created_at": "2026-10-10T09:31:17.527Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -10151,7 +10274,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Country Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T09:21:57.809Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -10287,7 +10410,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Country Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T09:08:27.750Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -10581,7 +10704,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Colonial Series , Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T08:54:34.301Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -10738,7 +10861,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Clinker Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T08:45:27.391Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -10897,7 +11020,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Carino Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T08:32:52.711Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -11059,7 +11182,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Belle Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T07:33:50.102Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -11196,7 +11319,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Belle Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T07:27:47.840Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -11336,7 +11459,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Belle Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T07:06:48.327Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -11482,7 +11605,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Arkansas, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T06:56:42.380Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -11632,7 +11755,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Arenta Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T06:47:14.485Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -11774,7 +11897,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Arenta Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T06:36:41.011Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -11911,7 +12034,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Alloy Series 1200, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T06:24:25.376Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "showTileOfSpainBadge": false,
       "show_tile_of_spain_badge": false,
       "spaceImages": {},
@@ -12046,7 +12169,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "Alberca, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T06:19:32.479Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -12208,7 +12331,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "9051-54 Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T05:47:05.396Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -12363,7 +12486,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "9001 Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T05:35:32.708Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -12509,7 +12632,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "9001 Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T05:30:07.879Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -12697,7 +12820,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "8000 Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-10T05:16:37.825Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -12843,7 +12966,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "8011 & 8012, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-09T19:34:59.625Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -13023,7 +13146,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "6621 To 6628, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-09T19:09:02.498Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -13175,7 +13298,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "6000 Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-09T19:00:53.341Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -13311,7 +13434,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "1004, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-09T18:50:06.209Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -13444,7 +13567,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "1003, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-09T18:31:00.913Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -13581,7 +13704,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "1001 & 1002 , Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-09T13:18:01.309Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "showTileOfSpainBadge": false,
       "show_tile_of_spain_badge": false,
       "spaceImages": {},
@@ -13761,7 +13884,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "582, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-08T12:00:18.208Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -13939,7 +14062,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "581, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-07T11:51:33.260Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -14075,7 +14198,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "232, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-07T11:17:02.049Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -14207,7 +14330,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "231, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-07T11:12:24.229Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -14334,7 +14457,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "230, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-07T11:05:51.568Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "showTileOfSpainBadge": false,
       "show_tile_of_spain_badge": false,
       "spaceImages": {},
@@ -14465,7 +14588,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "229, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-07T11:00:30.223Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "showTileOfSpainBadge": false,
       "show_tile_of_spain_badge": false,
       "spaceImages": {},
@@ -14595,7 +14718,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "228, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-07T10:50:58.753Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "showTileOfSpainBadge": false,
       "show_tile_of_spain_badge": false,
       "spaceImages": {},
@@ -14726,7 +14849,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "226, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-07T10:42:20.284Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "showTileOfSpainBadge": false,
       "show_tile_of_spain_badge": false,
       "spaceImages": {},
@@ -14856,7 +14979,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "223, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-07T10:26:46.472Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "showTileOfSpainBadge": false,
       "show_tile_of_spain_badge": false,
       "spaceImages": {},
@@ -14987,7 +15110,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "222, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-07T10:15:40.168Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "showTileOfSpainBadge": true,
       "show_tile_of_spain_badge": true,
       "spaceImages": {},
@@ -15118,7 +15241,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "215, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-07T09:53:54.027Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "showTileOfSpainBadge": false,
       "show_tile_of_spain_badge": false,
       "spaceImages": {},
@@ -15255,7 +15378,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "213, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-07T09:17:56.291Z",
-      "updated_at": "2026-11-20T14:36:14.666Z"
+      "updated_at": "2026-11-20T16:19:00.624Z"
     },
     {
       "id": "prod-1791363517473-a91965",
@@ -15394,7 +15517,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "210, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-07T08:58:37.477Z",
-      "updated_at": "2026-11-20T14:36:14.666Z"
+      "updated_at": "2026-11-20T16:19:00.624Z"
     },
     {
       "id": "prod-1791277653203-2a6913",
@@ -15527,7 +15650,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "209 Series, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-06T09:07:33.204Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "showTileOfSpainBadge": false,
       "show_tile_of_spain_badge": false,
       "spaceImages": {},
@@ -15665,7 +15788,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "208, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-06T08:51:25.061Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -15792,7 +15915,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "203, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-06T07:37:42.079Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "showTileOfSpainBadge": false,
       "show_tile_of_spain_badge": false,
       "spaceImages": {},
@@ -15933,7 +16056,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "204, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-06T07:16:59.514Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -16070,7 +16193,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "203, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-06T07:04:35.206Z",
-      "updated_at": "2026-11-20T14:36:14.666Z",
+      "updated_at": "2026-11-20T16:19:00.624Z",
       "spaceImages": {},
       "space_images": {}
     },
@@ -16251,7 +16374,7 @@
       "metaDescription": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "keywords": "201, Metallic Finish, tiles, timex ceramic",
       "created_at": "2026-10-04T10:04:38.757Z",
-      "updated_at": "2026-11-20T14:36:14.666Z"
+      "updated_at": "2026-11-20T16:19:00.624Z"
     },
     {
       "id": "prod-brick-2",
@@ -16400,7 +16523,7 @@
       "metaDescription": "Luxury architectural brick design tiles crafted for contemporary residential and hospitality projects. High stain resistance.",
       "keywords": "Ascot, Brick Look, Brick Look, vitrified tiles, timex ceramic",
       "created_at": "2026-09-24T11:06:21.139Z",
-      "updated_at": "2026-11-20T14:36:14.666Z"
+      "updated_at": "2026-11-20T16:19:00.624Z"
     }
   ],
   "seo_metadata": [
@@ -18853,7 +18976,7 @@
       "og_title": "Zelij ----| Timex Ceramic",
       "og_description": "The simplicity and elegance of a white tile with tasteful golden veins is undeniable. No matter the design of your bathroom, it will brighten it up even in the dimmest of lights.",
       "og_image": "/uploads/products/Amb-Zelij-Special-antic-azul-10x10.webp",
-      "updated_at": "2026-11-20T07:57:11.581Z"
+      "updated_at": "2026-11-20T16:17:48.002Z"
     },
     {
       "id": "seo-cat-marble",
@@ -19034,6 +19157,96 @@
       "twitter_description": "Feel the surface. See the depth.",
       "twitter_image": "https://www.timexceramic.com/wp-content/uploads/2024/11/8002-amb.jpg",
       "updated_at": "2026-11-18T13:06:31.450Z"
+    },
+    {
+      "id": "seo-prod-prod-1795190393602-0f0404",
+      "page_path": "/product/probe-test",
+      "content_type": "product",
+      "content_id": "prod-1795190393602-0f0404",
+      "title": "Probe Test",
+      "meta_title": "Probe Test | Timex Ceramic",
+      "seo_title": "Probe Test | Timex Ceramic",
+      "meta_description": "",
+      "focus_keyword": "Probe Test",
+      "canonical_url": "https://www.timexceramic.com/product/probe-test",
+      "robots_index": true,
+      "robots_follow": true,
+      "og_title": "Probe Test | Timex Ceramic",
+      "og_description": "",
+      "og_image": "",
+      "updated_at": "2026-11-20T15:59:53.674Z"
+    },
+    {
+      "id": "seo-prod-prod-1795190427003-eed8a6",
+      "page_path": "/product/probe2",
+      "content_type": "product",
+      "content_id": "prod-1795190427003-eed8a6",
+      "title": "Probe2",
+      "meta_title": "Probe2 | Timex Ceramic",
+      "seo_title": "Probe2 | Timex Ceramic",
+      "meta_description": "",
+      "focus_keyword": "Probe2",
+      "canonical_url": "https://www.timexceramic.com/product/probe2",
+      "robots_index": true,
+      "robots_follow": true,
+      "og_title": "Probe2 | Timex Ceramic",
+      "og_description": "",
+      "og_image": "",
+      "updated_at": "2026-11-20T16:00:27.069Z"
+    },
+    {
+      "id": "seo-prod-prod-1795190433926-7f0f64",
+      "page_path": "/product/e2e-test-product-1795190433671",
+      "content_type": "product",
+      "content_id": "prod-1795190433926-7f0f64",
+      "title": "E2E Test Product 1795190433671",
+      "meta_title": "E2E Test Product 1795190433671 | Timex Ceramic",
+      "seo_title": "E2E Test Product 1795190433671 | Timex Ceramic",
+      "meta_description": "x",
+      "focus_keyword": "E2E Test Product 1795190433671",
+      "canonical_url": "https://www.timexceramic.com/product/e2e-test-product-1795190433671",
+      "robots_index": true,
+      "robots_follow": true,
+      "og_title": "E2E Test Product 1795190433671 | Timex Ceramic",
+      "og_description": "x",
+      "og_image": "",
+      "updated_at": "2026-11-20T16:08:25.290Z"
+    },
+    {
+      "id": "seo-prod-prod-1795190492727-dcfcc5",
+      "page_path": "/product/e2e-test-product-updated-1795190492635",
+      "content_type": "product",
+      "content_id": "prod-1795190492727-dcfcc5",
+      "title": "E2E Test Product UPDATED 1795190492635",
+      "meta_title": "E2E Test Product 1795190492635 | Timex Ceramic",
+      "seo_title": "E2E Test Product 1795190492635 | Timex Ceramic",
+      "meta_description": "Temporary end-to-end test product.",
+      "focus_keyword": "E2E Test Product 1795190492635",
+      "canonical_url": "https://www.timexceramic.com/product/e2e-test-product-updated-1795190492635",
+      "robots_index": true,
+      "robots_follow": true,
+      "og_title": "E2E Test Product 1795190492635 | Timex Ceramic",
+      "og_description": "Temporary end-to-end test product.",
+      "og_image": "",
+      "updated_at": "2026-11-20T16:01:37.434Z"
+    },
+    {
+      "id": "seo-prod-prod-1795190530892-4b7223",
+      "page_path": "/product/e2e-restore-test-renamed-1795190530801",
+      "content_type": "product",
+      "content_id": "prod-1795190530892-4b7223",
+      "title": "E2E Restore Test RENAMED 1795190530801",
+      "meta_title": "E2E Restore Test 1795190530801 | Timex Ceramic",
+      "seo_title": "E2E Restore Test 1795190530801 | Timex Ceramic",
+      "meta_description": "",
+      "focus_keyword": "E2E Restore Test 1795190530801",
+      "canonical_url": "https://www.timexceramic.com/product/e2e-restore-test-renamed-1795190530801",
+      "robots_index": true,
+      "robots_follow": true,
+      "og_title": "E2E Restore Test 1795190530801 | Timex Ceramic",
+      "og_description": "",
+      "og_image": "",
+      "updated_at": "2026-11-20T16:02:11.073Z"
     }
   ],
   "enquiries": [
@@ -19085,7 +19298,7 @@
       },
       "details_json": "{\"city\":\"\",\"products\":[{\"index\":1,\"productId\":\"prod-1794987593915-c37717\",\"name\":\"Zelij\",\"code\":\"TMX-960\",\"size\":\"100mm x 100mm\",\"finish\":\"Glossy, Hand-Made\",\"quantity\":1,\"image\":\"/uploads/products/Amb-Zelij-Special-antic-azul-10x10.webp\",\"slug\":\"zelij\",\"productUrl\":\"https://www.timexceramic.com/product/zelij\"}],\"totalProductsCount\":1,\"totalUnitsCount\":1,\"email_delivery\":{\"admin\":{\"recipient\":\"info@timexceramic.com\",\"status\":\"ERROR\",\"method\":\"none\",\"id\":null,\"error\":\"Invalid login: 535 5.7.8 Authentication failed.\"},\"customer\":{\"recipient\":\"webmaster@ambestmedia.com\",\"status\":\"ERROR\",\"method\":\"none\",\"id\":null,\"error\":\"Invalid login: 535 5.7.8 Authentication failed.\"}}}",
       "created_at": "2026-11-18T13:18:15.177Z",
-      "updated_at": "2026-11-18T13:18:15.177Z"
+      "updated_at": "2026-11-20T15:21:57.364Z"
     },
     {
       "id": "inq-1794835671731-6eb3a4",
