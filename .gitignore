@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+dist/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Environment / secrets
+.env
+.env.*
+!.env.production.example
+
+# Backups & scratch
+backups/
+scratch/
+server/data/store.backup_*
+.commandcode/
+
+# Large media served directly from the VPS (excluded from deploys as well)
+public/uploads/
+public/catalogue/
+public/catalogues/
+
+# Logs & OS junk
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Misc
+.vercel
+*.pem

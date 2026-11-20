@@ -1,0 +1,40 @@
+module.exports = {
+  "apps": [
+    {
+      "name": "timex-backend",
+      "script": "server/index.js",
+      "cwd": "/var/www/timex-ceramic-new",
+      "instances": 1,
+      "autorestart": true,
+      "watch": false,
+      "max_memory_restart": "500M",
+      "env": {
+        "NODE_ENV": "production",
+        "BACKEND_PORT": 5001,
+        "PORT": 5001,
+        "ADMIN_NOTIFICATION_EMAIL": "info@timexceramic.com",
+        "ENQUIRY_EMAIL": "info@timexceramic.com",
+        "RECIPIENT_EMAIL": "info@timexceramic.com"
+      }
+    },
+    {
+      "name": "timex-frontend",
+      "script": "node_modules/next/dist/bin/next",
+      "args": [
+        "start",
+        "-p",
+        "3000"
+      ],
+      "cwd": "/var/www/timex-ceramic-new",
+      "instances": 1,
+      "exec_mode": "fork",
+      "autorestart": true,
+      "watch": false,
+      "max_memory_restart": "1G",
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": 3000
+      }
+    }
+  ]
+};

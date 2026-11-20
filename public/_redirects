@@ -1,0 +1,93 @@
+# ==============================================================================
+# TIMEX CERAMIC - NETLIFY REDIRECTS & REWRITES CONFIGURATION
+# ==============================================================================
+
+# 1. API Rewrites to Netlify Serverless Functions (High Priority)
+/api/v1/*    /.netlify/functions/api/:splat   200!
+/api/*       /.netlify/functions/api/:splat   200!
+
+# 2. Permanent 301 Redirects: Old /collections/:slug to New /product-category/:slug
+/collections/brick            /product-category/brick            301!
+/collections/brick/           /product-category/brick            301!
+/collections/stone            /product-category/stone            301!
+/collections/stone/           /product-category/stone            301!
+/collections/wooden           /product-category/wooden           301!
+/collections/wooden/          /product-category/wooden           301!
+/collections/tropical         /product-category/tropical         301!
+/collections/tropical/        /product-category/tropical         301!
+/collections/mosaic           /product-category/mosaic           301!
+/collections/mosaic/          /product-category/mosaic           301!
+/collections/marble           /product-category/marble           301!
+/collections/marble/          /product-category/marble           301!
+/collections/subway           /product-category/subway           301!
+/collections/subway/          /product-category/subway           301!
+/collections/texture          /product-category/texture          301!
+/collections/texture/         /product-category/texture          301!
+/collections/metallic         /product-category/metallic         301!
+/collections/metallic/        /product-category/metallic         301!
+/collections/boutique         /product-category/boutique         301!
+/collections/boutique/        /product-category/boutique         301!
+/collections/hexagon          /product-category/hexagon          301!
+/collections/hexagon/         /product-category/hexagon          301!
+/collections/moroccan         /product-category/moroccan         301!
+/collections/moroccan/        /product-category/moroccan         301!
+/collections/colorful         /product-category/colorful         301!
+/collections/colorful/        /product-category/colorful         301!
+/collections/highlighter      /product-category/highlighter      301!
+/collections/highlighter/     /product-category/highlighter      301!
+/collections/french-frames    /product-category/french-frames    301!
+/collections/french-frames/   /product-category/french-frames    301!
+/collections/modular          /product-category/modular          301!
+/collections/modular/         /product-category/modular          301!
+/collections/octagonal        /product-category/octagonal        301!
+/collections/octagonal/       /product-category/octagonal        301!
+/collections/terrazzo         /product-category/terrazzo         301!
+/collections/terrazzo/        /product-category/terrazzo         301!
+/collections/white            /product-category/white            301!
+/collections/white/           /product-category/white            301!
+/collections/fabric           /product-category/fabric           301!
+/collections/fabric/          /product-category/fabric           301!
+/collections/geometric        /product-category/geometric        301!
+/collections/geometric/       /product-category/geometric        301!
+/collections/vestige          /product-category/vestige          301!
+/collections/vestige/         /product-category/vestige          301!
+/collections/combo            /product-category/combo            301!
+/collections/combo/           /product-category/combo            301!
+/collections/lumina           /product-category/lumina           301!
+/collections/lumina/          /product-category/lumina           301!
+/collections/:slug            /product-category/:slug            301!
+/collections/:slug/           /product-category/:slug/           301!
+
+# 3. SPA Deep-Linking & Direct Page Refreshes
+/admin                /admin.html                      200
+/admin/*              /admin.html                      200
+/products             /products.html                   200
+/products/*           /products.html                   200
+/product/*            /products.html                   200
+/collections          /collections.html                200
+/product-category     /collections.html                200
+/product-category/*   /collections.html                200
+/blogs                /blogs.html                      200
+/blogs/*              /blogs.html                      200
+/blog/*               /blogs.html                      200
+
+# 4. Direct Canonical Tiles by Space Routes
+/living-room-tiles     /living-room-tiles.html      200
+/bedroom-tiles         /bedroom-tiles.html          200
+/kitchen-tiles         /kitchen-tiles.html          200
+/bathroom-tiles        /bathroom-tiles.html         200
+/elevation-tiles       /elevation-tiles.html        200
+/dining-room-tiles     /dining-room-tiles.html      200
+/balcony-terrace-tiles /balcony-terrace-tiles.html  200
+/outdoor-tiles         /outdoor-tiles.html          200
+/commercial-tiles      /commercial-tiles.html       200
+/restaurant-tiles      /restaurant-tiles.html       200
+/cafe-tiles            /cafe-tiles.html             200
+/hotel-tiles           /hotel-tiles.html            200
+/office-tiles          /office-tiles.html           200
+/swimming-pool-tiles   /swimming-pool-tiles.html    200
+/parking-tiles         /parking-tiles.html          200
+/spa-wellness-tiles    /spa-wellness-tiles.html     200
+
+# 5. Global SPA Fallback (Prevents Netlify 404s on direct URL refresh)
+/*           /index.html                      200

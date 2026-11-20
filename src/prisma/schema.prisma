@@ -1,0 +1,229 @@
+datasource db {
+  provider = "mysql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  DEALER
+  ARCHITECT
+  CUSTOMER
+}
+
+enum InquiryType {
+  GENERAL
+  SAMPLE
+  DEALER_REGISTRATION
+  ARCHITECT_REGISTRATION
+  BULK_INQUIRY
+  QUOTE_REQUEST
+}
+
+enum CatalogType {
+  DEALER
+  ARCHITECT
+  CUSTOMER
+  PROJECT
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String
+  name          String
+  role          Role           @default(CUSTOMER)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  profile       Profile?
+  savedProjects SavedProject[]
+  moodboards    Moodboard[]
+  catalogs      Catalog[]
+  auditLogs     AuditLog[]
+}
+
+model Profile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phone       String?
+  company     String?
+  address     String?
+  gstNo       String?
+  credits     Int      @default(0)
+  rewards     Int      @default(0)
+  isApproved  Boolean  @default(false)
+  avatarUrl   String?
+  metadata    Json?    // For custom settings (e.g. favorite warehouse, agent settings)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  image       String?
+  description String?   @db.Text
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Collection {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?   @db.Text
+  coverImage  String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id             String      @id @default(uuid())
+  sku            String      @unique
+  slug           String      @unique
+  name           String
+  code           String      @unique
+  barcode        String?
+  description    String?     @db.Text
+  price          Decimal     @db.Decimal(10, 2)
+  b2bPrice       Decimal?    @db.Decimal(10, 2)
+  inventory      Int         @default(0)
+  
+  // Media Files
+  images         Json        // JSON list: string[] (Unlimited images)
+  videos         Json?       // JSON list: string[] (Unlimited videos)
+  images360      Json?       // JSON list: string[] (360-degree rotation frames)
+  arModelGlb     String?
+  arModelUsdz    String?
+  textureFile    String?     // Path to tiling texture map
+  tilePattern    String?     // Default laying pattern for visualizer
+  
+  // Attachments
+  productPdf     String?
+  installationPdf String?
+  warrantyPdf    String?
+  cadFile        String?
+  bimFile        String?
+  qrCode         String?
+  
+  // Dynamic Specifications
+  size           String      // e.g. "600x600 mm", "800x1600 mm"
+  thickness      String      // e.g. "9 mm", "15 mm"
+  finish         String      // e.g. "Polished", "Matt", "Glossy", "Anti Skid"
+  look           String      // e.g. "Marble Look", "Wood Look", "Stone Look", "Concrete"
+  material       String      // e.g. "Vitrified", "Ceramic", "Porcelain"
+  application    String      // e.g. "Floor", "Wall", "Indoor", "Outdoor", "Commercial"
+  color          String      // e.g. "White", "Grey", "Beige", "Gold"
+  pattern        String?     // e.g. "Random", "Bookmatch"
+  
+  // Flags
+  isBestSeller   Boolean     @default(false)
+  isNewArrival   Boolean     @default(false)
+  isActive       Boolean     @default(true)
+  showTileOfSpainBadge Boolean @default(false)
+  
+  // Relations
+  categoryId     String
+  category       Category    @relation(fields: [categoryId], references: [id])
+  collectionId   String?
+  collection     Collection? @relation(fields: [collectionId], references: [id])
+  
+  // Cross sell & Upsell IDs stored as JSON for flexibility
+  relatedProductIds Json?    // JSON list: string[]
+  crossSellProductIds Json?   // JSON list: string[]
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model SavedProject {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  roomType    String   // e.g. "Bathroom", "Kitchen"
+  designData  Json     // Full Visualizer camera positions, grout color, tile scale settings
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Moodboard {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  clientName  String?
+  items       Json     // JSON list: { productId?: string, imageUrl?: string, x: number, y: number, w: number, h: number }[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Catalog {
+  id          String      @id @default(uuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  type        CatalogType @default(CUSTOMER)
+  layoutData  Json        // Canvas layouts, Cover templates, TOC configurations, page items
+  pdfUrl      String?
+  watermark   String?
+  signature   String?     // Digital signature image path
+  logoUrl     String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model BlogPost {
+  id             String   @id @default(uuid())
+  slug           String   @unique
+  title          String
+  content        String   @db.Text
+  coverImage     String
+  author         String
+  category       String   // e.g. "Tiles", "Interior Design", "Trends"
+  tags           Json     // JSON list: string[]
+  seoTitle       String?
+  seoDescription String?  @db.Text
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Inquiry {
+  id          String      @id @default(uuid())
+  type        InquiryType @default(GENERAL)
+  name        String
+  email       String
+  phone       String
+  company     String?
+  message     String      @db.Text
+  status      String      @default("PENDING") // PENDING, IN_PROGRESS, RESOLVED
+  fileUrl     String?     // Attachments (e.g. floor plan layouts)
+  details     Json?       // Metadata JSON (e.g. quantity calculated, specific room chosen)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model CMSConfig {
+  id          String   @id @default(uuid())
+  key         String   @unique // e.g. "HOMEPAGE_BANNER", "HERO_VIDEOS", "FOOTER_LINKS"
+  value       Json     // Dynamic JSON config representing menus, links, slider details
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String   // e.g. "PRODUCT_UPDATE", "DEALER_LOGIN"
+  details   String   @db.Text
+  ip        String?
+  createdAt DateTime @default(now())
+}
