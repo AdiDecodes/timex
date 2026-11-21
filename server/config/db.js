@@ -967,6 +967,19 @@ async function initSchemaAndSeed(dbPool) {
     if (prodRows[0].count === 0) {
       const store = loadFallbackStore();
       const initialProducts = store.products || [];
+      // Pick the FIRST source that actually has entries so an empty object
+      // (e.g. spaceImages: {}) never shadows a populated *_json string.
+      function pickMap(...candidates) {
+        for (const c of candidates) {
+          if (c === undefined || c === null) continue;
+          let parsed = c;
+          if (typeof parsed === "string") {
+            try { parsed = JSON.parse(parsed); } catch (_) { continue; }
+          }
+          if (parsed && typeof parsed === "object" && Object.keys(parsed).length > 0) return parsed;
+        }
+        return {};
+      }
       for (const p of initialProducts) {
         try {
           await dbPool.query(
@@ -988,7 +1001,7 @@ async function initSchemaAndSeed(dbPool) {
               p.application || p.usage || "Floor & Wall", p.pattern || p.tilePattern || "Straight",
               p.waterAbsorption || p.water_absorption || "< 0.05%",
               JSON.stringify(p.images || []),
-              JSON.stringify(p.spaceImages || p.space_images || {}),
+              JSON.stringify(pickMap(p.spaceImages, p.space_images, p.space_images_json)),
               JSON.stringify(p.secondaryCategories || p.secondary_categories || []),
               JSON.stringify(p.subcategories || []),
               JSON.stringify(p.availableColors || (p.color ? [p.color] : [])),

@@ -746,6 +746,148 @@ function matchesProductCategory(product, targetCategoryOrSlugOrId) {
   return false;
 }
 
+// Expand a MySQL products row: parse every *_json column into its camelCase
+// object/array form so normalizeProduct receives complete data.
+function expandMysqlProductRow(r) {
+  const jsonColumnMap = {
+    images_json: "images",
+    space_images_json: "spaceImages",
+    secondary_categories_json: "secondaryCategories",
+    subcategories_json: "subcategories",
+    available_colors_json: "availableColors",
+    color_hexes_json: "colorHexes",
+    available_sizes_json: "availableSizes",
+    size_images_json: "sizeImages",
+    color_images_json: "colorImages",
+    spaces_json: "spaces",
+    shapes_json: "shapes",
+    tiles_by_size_list_json: "tilesBySizeList",
+    combination_images_json: "combinationImages",
+    combination_mappings_json: "combinationProductMappings",
+  };
+  const out = { ...r };
+  for (const [col, key] of Object.entries(jsonColumnMap)) {
+    if (out[col] === undefined || out[col] === null || out[col] === "") continue;
+    try {
+      const parsed = JSON.parse(out[col]);
+      if (parsed !== null && typeof parsed === "object") out[key] = parsed;
+    } catch (_) {}
+  }
+  return out;
+}
+
+// MySQL holds only the original schema columns. The complete product (spaces,
+// sizes, color/size images, video, catalogue, trash state, etc.) is mirrored
+// into store.json on every admin write. Merge those fields back so API
+// consumers receive complete data WITHOUT any schema change.
+function isEmptyValue(v) {
+  return v === undefined || v === null || v === "" ||
+    (Array.isArray(v) && v.length === 0) ||
+    (typeof v === "object" && !Array.isArray(v) && Object.keys(v).length === 0);
+}
+
+function buildStoreProductIndex(store) {
+  const index = new Map();
+  for (const p of store.products || []) {
+    if (p.id) index.set(String(p.id).toLowerCase(), p);
+    if (p.slug) index.set(String(p.slug).toLowerCase(), p);
+    if (p.code) index.set(String(p.code).toLowerCase(), p);
+  }
+  return index;
+}
+
+function mergeStoreProduct(mysqlProduct, storeIndex) {
+  if (!storeIndex) return mysqlProduct;
+  const twin =
+    storeIndex.get(String(mysqlProduct.id || "").toLowerCase()) ||
+    storeIndex.get(String(mysqlProduct.slug || "").toLowerCase()) ||
+    storeIndex.get(String(mysqlProduct.code || "").toLowerCase());
+  if (!twin) return mysqlProduct;
+
+  const merged = { ...mysqlProduct };
+  for (const [key, value] of Object.entries(twin)) {
+    if (isEmptyValue(merged[key]) && !isEmptyValue(value)) {
+      merged[key] = value;
+    }
+  }
+  // Trash state authority is the store (MySQL has no is_trashed column)
+  if (twin.is_trashed) merged.is_trashed = true;
+  if (twin.is_active === false) merged.is_active = false;
+  return merged;
+}
+
+// Insert (or upsert) a normalized product into MySQL using the original schema.
+// If a row already exists (id/sku/slug/code are UNIQUE), it is refreshed instead
+// of failing — used by create, duplicate. Fields without MySQL columns keep
+// living in store.json and are merged back on read (see mergeStoreProduct).
+const PRODUCT_COLUMNS = [
+  "id", "sku", "slug", "name", "code", "barcode", "description", "price", "b2b_price", "inventory",
+  "category_id", "category_name", "collection_id", "collection_name", "size", "thickness",
+  "finish", "look", "material", "origin", "color", "application", "pattern", "water_absorption",
+  "images_json", "space_images_json", "secondary_categories_json", "subcategories_json",
+  "available_colors_json", "color_hexes_json",
+  "is_active", "is_new_arrival", "is_bestseller", "show_tile_of_spain_badge",
+  "meta_title", "meta_description", "keywords",
+];
+
+function productColumnValues(p) {
+  return {
+    id: p.id,
+    sku: p.sku,
+    slug: p.slug,
+    name: p.name,
+    code: p.code,
+    barcode: p.barcode || null,
+    description: p.description || "",
+    price: p.price || 0,
+    b2b_price: p.b2b_price || p.b2bPrice || 0,
+    inventory: p.inventory || 0,
+    category_id: p.category_id || p.categoryId || "stone",
+    category_name: p.category_name || p.category || "Stone Look",
+    collection_id: p.collection_id || p.collectionId || "coll-stone",
+    collection_name: p.collection_name || p.collection || "Timex Premium Collection",
+    size: p.size || "",
+    thickness: p.thickness || "",
+    finish: p.finish || "",
+    look: p.look || "",
+    material: p.material || "",
+    origin: p.origin || "",
+    color: p.color || "",
+    application: p.application || "",
+    pattern: p.pattern || "",
+    water_absorption: null,
+    images_json: JSON.stringify(p.images || []),
+    space_images_json: p.space_images_json || JSON.stringify(p.spaceImages || {}),
+    secondary_categories_json: p.secondary_categories_json || JSON.stringify(p.secondaryCategories || p.secondary_categories || []),
+    subcategories_json: p.subcategories_json || JSON.stringify(p.subcategories || []),
+    available_colors_json: JSON.stringify(p.availableColors || []),
+    color_hexes_json: JSON.stringify(p.colorHexes || p.color_hexes || {}),
+    is_active: p.is_active !== false && p.isActive !== false,
+    is_new_arrival: Boolean(p.is_new_arrival || p.isNewArrival),
+    is_bestseller: Boolean(p.is_bestseller || p.isBestseller),
+    show_tile_of_spain_badge: Boolean(p.show_tile_of_spain_badge || p.showTileOfSpainBadge),
+    meta_title: p.meta_title || p.metaTitle || `${p.name || ""} | Timex Ceramic`,
+    meta_description: p.meta_description || p.metaDescription || p.description || "",
+    keywords: p.keywords || "",
+  };
+}
+
+async function insertProductRow(pool, p) {
+  const valueMap = productColumnValues(p);
+  const values = PRODUCT_COLUMNS.map((c) => valueMap[c]);
+  const placeholders = PRODUCT_COLUMNS.map(() => "?").join(", ");
+  const updateClause = PRODUCT_COLUMNS
+    .filter((c) => c !== "id")
+    .map((c) => `${c} = VALUES(${c})`)
+    .join(", ");
+
+  await pool.query(
+    `INSERT INTO products (${PRODUCT_COLUMNS.join(", ")}) VALUES (${placeholders})
+     ON DUPLICATE KEY UPDATE ${updateClause}`,
+    values
+  );
+}
+
 // GET /api/v1/products
 router.get("/", async (req, res) => {
   const { category, search, activeOnly, includeTrashed, tag, newArrivals, sort } = req.query;
@@ -788,38 +930,14 @@ router.get("/", async (req, res) => {
       sql += " ORDER BY updated_at DESC";
 
       const [rows] = await pool.query(sql, params);
+      const storeIndex = buildStoreProductIndex(loadFallbackStore());
       let parsed = rows.map((r) => {
-        const imgs = r.images_json ? JSON.parse(r.images_json) : [];
-        let spImgs = {};
-        try {
-          if (r.space_images_json) spImgs = JSON.parse(r.space_images_json);
-        } catch (_) {}
-        let secCats = [];
-        try {
-          if (r.secondary_categories_json) secCats = JSON.parse(r.secondary_categories_json);
-        } catch (_) {}
-        let subCats = [];
-        try {
-          if (r.subcategories_json) subCats = JSON.parse(r.subcategories_json);
-        } catch (_) {}
-        let availColors = [];
-        try {
-          if (r.available_colors_json) availColors = JSON.parse(r.available_colors_json);
-        } catch (_) {}
-        let colHexes = {};
-        try {
-          if (r.color_hexes_json) colHexes = JSON.parse(r.color_hexes_json);
-        } catch (_) {}
-        return normalizeProduct({
-          ...r,
-          images: imgs,
-          spaceImages: spImgs,
-          secondaryCategories: secCats,
-          secondary_categories: secCats,
-          subcategories: subCats,
-          availableColors: Array.isArray(availColors) && availColors.length > 0 ? availColors : (r.color ? [r.color] : []),
-          colorHexes: colHexes,
+        const expanded = expandMysqlProductRow(r);
+        const norm = normalizeProduct({
+          ...expanded,
+          availableColors: Array.isArray(expanded.availableColors) && expanded.availableColors.length > 0 ? expanded.availableColors : (r.color ? [r.color] : []),
         });
+        return mergeStoreProduct(norm, storeIndex);
       });
 
       if (!allowTrashed) {
@@ -1061,37 +1179,12 @@ router.get("/:idOrSlug", async (req, res) => {
         return res.status(404).json({ success: false, error: "Product not found." });
       }
       const prod = rows[0];
-      const imgs = prod.images_json ? JSON.parse(prod.images_json) : [];
-      let spImgs = {};
-      try {
-        if (prod.space_images_json) spImgs = JSON.parse(prod.space_images_json);
-      } catch (_) {}
-      let secCats = [];
-      try {
-        if (prod.secondary_categories_json) secCats = JSON.parse(prod.secondary_categories_json);
-      } catch (_) {}
-      let subCats = [];
-      try {
-        if (prod.subcategories_json) subCats = JSON.parse(prod.subcategories_json);
-      } catch (_) {}
-      let availColors = [];
-      try {
-        if (prod.available_colors_json) availColors = JSON.parse(prod.available_colors_json);
-      } catch (_) {}
-      let colHexes = {};
-      try {
-        if (prod.color_hexes_json) colHexes = JSON.parse(prod.color_hexes_json);
-      } catch (_) {}
-      const normalized = normalizeProduct({
-        ...prod,
-        images: imgs,
-        spaceImages: spImgs,
-        secondaryCategories: secCats,
-        secondary_categories: secCats,
-        subcategories: subCats,
-        availableColors: Array.isArray(availColors) && availColors.length > 0 ? availColors : (prod.color ? [prod.color] : []),
-        colorHexes: colHexes,
+      const expanded = expandMysqlProductRow(prod);
+      const norm = normalizeProduct({
+        ...expanded,
+        availableColors: Array.isArray(expanded.availableColors) && expanded.availableColors.length > 0 ? expanded.availableColors : (prod.color ? [prod.color] : []),
       });
+      const normalized = mergeStoreProduct(norm, buildStoreProductIndex(loadFallbackStore()));
       if (normalized.is_trashed && !allowTrashed) {
         return res.status(404).json({ success: false, error: "Product not found." });
       }
@@ -1150,53 +1243,7 @@ router.post("/", async (req, res) => {
   try {
     if (isMysqlConnected()) {
       const pool = getPool();
-      await pool.query(
-        `INSERT INTO products (
-          id, sku, slug, name, code, barcode, description, price, b2b_price, inventory,
-          category_id, category_name, collection_id, collection_name, size, thickness,
-          finish, look, material, origin, color, application, pattern, water_absorption,
-          images_json, space_images_json, secondary_categories_json, subcategories_json, available_colors_json, color_hexes_json, is_active, is_new_arrival, is_bestseller, show_tile_of_spain_badge, meta_title, meta_description, keywords
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          newProduct.id,
-          newProduct.sku,
-          newProduct.slug,
-          newProduct.name,
-          newProduct.code,
-          newProduct.barcode,
-          newProduct.description,
-          newProduct.price,
-          newProduct.b2b_price,
-          newProduct.inventory,
-          newProduct.category_id,
-          newProduct.category_name,
-          newProduct.collection_id,
-          newProduct.collection_name,
-          newProduct.size,
-          newProduct.thickness,
-          newProduct.finish,
-          newProduct.look,
-          newProduct.material,
-          newProduct.origin,
-          newProduct.color,
-          newProduct.application,
-          newProduct.pattern,
-          null, // water_absorption removed
-          JSON.stringify(newProduct.images),
-          newProduct.space_images_json || JSON.stringify(newProduct.spaceImages || {}),
-          newProduct.secondary_categories_json || JSON.stringify(newProduct.secondaryCategories || []),
-          newProduct.subcategories_json || JSON.stringify(newProduct.subcategories || []),
-          JSON.stringify(newProduct.availableColors || []),
-          JSON.stringify(newProduct.colorHexes || {}),
-          newProduct.is_active,
-          newProduct.is_new_arrival,
-          newProduct.is_bestseller,
-          newProduct.show_tile_of_spain_badge,
-          newProduct.meta_title,
-          newProduct.meta_description,
-          newProduct.keywords,
-        ]
-      );
+      await insertProductRow(pool, newProduct);
     }
 
     // Always update fallback store so Next.js server components can read instantly
@@ -1481,6 +1528,8 @@ router.delete("/:id", async (req, res) => {
     current.is_active = false;
     current.deleted_at = new Date().toISOString();
     current.deleted_by = req.body?.deletedBy || "admin";
+    // Note: MySQL has no trash columns; store.json is the trash authority and
+    // GET endpoints merge that state back in (see mergeStoreProduct).
 
     // Handle attached images safely:
     // If an image is ONLY used by this deleted product, flag it as trashed in store.media.
@@ -1526,7 +1575,21 @@ router.post("/:id/duplicate", async (req, res) => {
   try {
     const store = loadFallbackStore();
     const existingProducts = store.products || [];
-    const source = existingProducts.find((p) => p.id === id || p.slug === id || p.code === id);
+    let source = existingProducts.find((p) => p.id === id || p.slug === id || p.code === id);
+
+    // In MySQL mode the source may live only in the database
+    if (!source && isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        const [rows] = await pool.query(
+          "SELECT * FROM products WHERE id = ? OR slug = ? OR code = ? LIMIT 1",
+          [id, id, id]
+        );
+        if (rows.length > 0) {
+          source = normalizeProduct(expandMysqlProductRow(rows[0]));
+        }
+      } catch (_) {}
+    }
 
     if (!source) {
       return res.status(404).json({ success: false, error: "Product not found." });
@@ -1562,6 +1625,15 @@ router.post("/:id/duplicate", async (req, res) => {
     );
 
     existingProducts.unshift(duplicatedProduct);
+
+    // Insert the duplicate into MySQL as well
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await insertProductRow(pool, duplicatedProduct);
+      } catch (_) {}
+    }
+
     saveFallbackStore(store);
 
     return res.status(201).json({
@@ -1592,6 +1664,7 @@ router.post("/:id/restore", async (req, res) => {
     current.is_active = true;
     current.deleted_at = null;
     current.deleted_by = null;
+    // Note: no MySQL trash columns; the row was never flagged in MySQL.
 
     // Restore any attached media that were trashed for this product
     if (Array.isArray(current.images) && Array.isArray(store.media)) {
@@ -1637,6 +1710,17 @@ router.delete("/:id/permanent", async (req, res) => {
     existingProducts.splice(idx, 1);
     store.products = existingProducts;
 
+    // Remove the MySQL row as well
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query(
+          "DELETE FROM products WHERE id = ? OR slug = ? OR code = ?",
+          [current.id, current.slug, current.code]
+        );
+      } catch (_) {}
+    }
+
     // Clean up unshared media files
     const cleanedFiles = [];
     for (const imgUrl of currentImages) {
@@ -1671,3 +1755,5 @@ router.delete("/:id/permanent", async (req, res) => {
 
 module.exports = router;
 module.exports.normalizeProduct = normalizeProduct;
+module.exports.insertProductRow = insertProductRow;
+module.exports.expandMysqlProductRow = expandMysqlProductRow;

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getSpaceBySlug, getProductsForSpace, generateSpaceMetadata } from "@/services/spaces";
+import { Suspense } from "react";
 import { SpaceTilesPage } from "@/components/space/SpaceTilesPage";
 
 export const revalidate = 10;
@@ -14,5 +15,9 @@ export default async function KitchenTilesPage() {
 
   const products = await getProductsForSpace(space);
 
-  return <SpaceTilesPage space={space} initialProducts={products} />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#F7F5F0]" />}>
+      <SpaceTilesPage space={space} initialProducts={products} />
+    </Suspense>
+  );
 }

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { loadFallbackStore, saveFallbackStore } = require("../config/db");
+const { getPool, isMysqlConnected, loadFallbackStore, saveFallbackStore } = require("../config/db");
 const {
   calculateMediaUsage,
   safeDeleteMediaFile,
@@ -129,7 +129,7 @@ router.get("/", (req, res) => {
 });
 
 // POST /api/v1/trash/restore
-router.post("/restore", (req, res) => {
+router.post("/restore", async (req, res) => {
   const { type, id } = req.body;
   if (!type || !id) {
     return res.status(400).json({ success: false, error: "Item type and ID are required." });
@@ -147,6 +147,7 @@ router.post("/restore", (req, res) => {
       prod.is_active = true;
       prod.deleted_at = null;
       prod.deleted_by = null;
+      // Note: no MySQL trash columns; the row was never flagged in MySQL.
 
       // Restore any media attached to this product that were trashed
       if (Array.isArray(prod.images)) {
@@ -217,7 +218,7 @@ router.post("/restore", (req, res) => {
 });
 
 // DELETE /api/v1/trash/permanent
-router.delete("/permanent", (req, res) => {
+router.delete("/permanent", async (req, res) => {
   const { type, id } = req.body;
   if (!type || !id) {
     return res.status(400).json({ success: false, error: "Item type and ID are required." });
@@ -234,8 +235,16 @@ router.delete("/permanent", (req, res) => {
       const prod = store.products[idx];
       const prodImages = Array.isArray(prod.images) ? [...prod.images] : [];
 
-      // Remove product record first
+      // Remove product record
       store.products.splice(idx, 1);
+
+      // Remove the MySQL row as well (plain row delete, no schema dependency)
+      if (isMysqlConnected()) {
+        try {
+          const pool = getPool();
+          await pool.query("DELETE FROM products WHERE id = ? OR slug = ?", [prod.id, prod.slug]);
+        } catch (_) {}
+      }
 
       // Check attached media: If an image was ONLY used by this deleted product, delete it permanently
       const cleanedFiles = [];
@@ -317,7 +326,7 @@ router.delete("/permanent", (req, res) => {
 
 // POST /api/v1/trash/empty (Empty Recycle Bin)
 // Optional body { type: "products"|"blogs"|"media"|"pages" } — empties only that type; omits = everything.
-router.post("/empty", (req, res) => {
+router.post("/empty", async (req, res) => {
   try {
     const store = loadFallbackStore();
     seedInitialMedia(store);

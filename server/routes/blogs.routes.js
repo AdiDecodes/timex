@@ -12,8 +12,12 @@ function slugify(text) {
 }
 
 function parseMysqlBlog(r) {
+  const fallbackDate = r.created_at
+    ? new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+    : undefined;
   return {
     ...r,
+    date: r.post_date || fallbackDate,
     author: {
       name: r.author_name || "Timex Design Editorial",
       role: r.author_role || "Senior Tile Architect",
@@ -30,6 +34,18 @@ function parseMysqlBlog(r) {
   };
 }
 
+// Merge trash state + date from the store.json twin (MySQL has no such columns)
+function mergeStoreBlog(blog, store) {
+  const twin = (store.blogs || []).find((b) => b.id === blog.id || b.slug === blog.slug);
+  if (!twin) return blog;
+  return {
+    ...blog,
+    is_trashed: Boolean(twin.is_trashed),
+    deleted_at: twin.deleted_at || null,
+    date: twin.date || blog.date,
+  };
+}
+
 // GET /api/v1/blogs
 router.get("/", async (req, res) => {
   const allowTrashed = req.query.includeTrashed === "true";
@@ -37,8 +53,9 @@ router.get("/", async (req, res) => {
   try {
     if (isMysqlConnected()) {
       const pool = getPool();
+      const store = loadFallbackStore();
       const [rows] = await pool.query("SELECT * FROM blogs ORDER BY created_at DESC");
-      let blogs = rows.map(parseMysqlBlog);
+      let blogs = rows.map((r) => mergeStoreBlog(parseMysqlBlog(r), store));
       if (!allowTrashed) {
         blogs = blogs.filter((b) => !b.is_trashed);
       }
@@ -69,7 +86,7 @@ router.get("/:slug", async (req, res) => {
       if (rows.length === 0) {
         return res.status(404).json({ success: false, error: "Blog post not found." });
       }
-      const blog = parseMysqlBlog(rows[0]);
+      const blog = mergeStoreBlog(parseMysqlBlog(rows[0]), loadFallbackStore());
       if (blog.is_trashed && !allowTrashed) {
         return res.status(404).json({ success: false, error: "Blog post not found." });
       }
@@ -232,6 +249,8 @@ router.delete("/:id", async (req, res) => {
     blog.is_trashed = true;
     blog.deleted_at = new Date().toISOString();
     blog.deleted_by = req.body?.deletedBy || "admin";
+    // Note: MySQL has no trash columns; store.json is the trash authority and
+    // GET endpoints merge that state back in.
 
     saveFallbackStore(store);
     return res.json({ success: true, message: `Blog post "${blog.title}" moved to Recycle Bin.`, blog });
@@ -255,6 +274,7 @@ router.post("/:id/restore", async (req, res) => {
     blog.status = "Published";
     blog.deleted_at = null;
     blog.deleted_by = null;
+    // Note: no MySQL trash columns; the row was never flagged in MySQL.
 
     saveFallbackStore(store);
     return res.json({ success: true, message: `Blog post "${blog.title}" restored.`, blog });

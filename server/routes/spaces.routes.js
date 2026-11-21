@@ -255,13 +255,34 @@ router.get("/:slug/products", async (req, res) => {
       try {
         const pool = getPool();
         const [rows] = await pool.query("SELECT * FROM products WHERE is_active = TRUE ORDER BY updated_at DESC");
+        // Merge fields MySQL doesn't store (spaces, sizes, images maps, trash state)
+        // back in from the store.json twin so space matching works completely.
+        const storeIndex = new Map();
+        for (const p of store.products || []) {
+          if (p.id) storeIndex.set(String(p.id).toLowerCase(), p);
+          if (p.slug) storeIndex.set(String(p.slug).toLowerCase(), p);
+        }
         allProducts = rows.map((r) => {
           const imgs = r.images_json ? JSON.parse(r.images_json) : [];
           let spImgs = {};
           try {
             if (r.space_images_json) spImgs = JSON.parse(r.space_images_json);
           } catch (_) {}
-          return normalizeProduct({ ...r, images: imgs, spaceImages: spImgs });
+          const norm = normalizeProduct({ ...r, images: imgs, spaceImages: spImgs });
+          const twin = storeIndex.get(String(norm.id || "").toLowerCase()) || storeIndex.get(String(norm.slug || "").toLowerCase());
+          if (!twin) return norm;
+          const merged = { ...norm };
+          for (const [key, value] of Object.entries(twin)) {
+            const cur = merged[key];
+            const empty = cur === undefined || cur === null || cur === "" ||
+              (Array.isArray(cur) && cur.length === 0) ||
+              (typeof cur === "object" && !Array.isArray(cur) && Object.keys(cur).length === 0);
+            if (empty && value !== undefined && value !== null && value !== "") {
+              merged[key] = value;
+            }
+          }
+          if (twin.is_trashed) merged.is_trashed = true;
+          return merged;
         });
       } catch (dbErr) {
         console.warn("Error querying products from MySQL in space products route:", dbErr.message);
