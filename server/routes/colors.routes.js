@@ -329,6 +329,7 @@ router.put("/:id", async (req, res) => {
     if (trimmedName && previousName && trimmedName !== previousName) {
       if (Array.isArray(store.products)) {
         let storeChanged = false;
+        const affectedIds = [];
         store.products.forEach((p) => {
           if (Array.isArray(p.availableColors)) {
             const pIdx = p.availableColors.findIndex(
@@ -343,9 +344,29 @@ router.put("/:id", async (req, res) => {
             p.color = trimmedName;
             storeChanged = true;
           }
+          if (storeChanged) affectedIds.push(p.id);
         });
         if (storeChanged) {
           saveFallbackStore(store);
+
+          // Mirror the rename into MySQL product rows
+          if (isMysqlConnected()) {
+            try {
+              const pool = getPool();
+              for (const pid of affectedIds) {
+                const row = store.products.find((p) => p.id === pid);
+                if (!row) continue;
+                await pool.query(
+                  "UPDATE products SET color = ?, available_colors_json = ?, updated_at = NOW() WHERE id = ?",
+                  [
+                    row.color || null,
+                    JSON.stringify(row.availableColors || []),
+                    pid,
+                  ]
+                );
+              }
+            } catch (_) {}
+          }
         }
       }
     }

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { loadFallbackStore, saveFallbackStore } = require("../config/db");
+const { getPool, isMysqlConnected, loadFallbackStore, saveFallbackStore } = require("../config/db");
 const defaultSpaces = require("../data/defaultSpaces.json");
 
 function slugify(text) {
@@ -722,7 +722,7 @@ router.post("/category", (req, res) => {
 });
 
 // PUT /api/v1/taxonomies/category/:identifier
-router.put("/category/:identifier", (req, res) => {
+router.put("/category/:identifier", async (req, res) => {
   try {
     const { identifier } = req.params;
     const body = req.body || {};
@@ -864,21 +864,27 @@ router.put("/category/:identifier", (req, res) => {
     cat.updatedAt = new Date().toISOString();
 
     // Safely update product references if slug changed
+    const mysqlAffectedProducts = new Set();
     if (Array.isArray(store.products) && oldSlug !== cat.slug) {
       store.products.forEach((p) => {
         const pCatId = (p.categoryId || p.category_id || "").toLowerCase();
         const pColId = (p.collectionId || p.collection_id || "").toLowerCase();
+        let touched = false;
         if (pCatId === oldSlug || pCatId === oldId.toLowerCase()) {
           p.categoryId = cat.id;
           p.category_id = cat.id;
+          touched = true;
         }
         if (pColId === oldSlug || pColId === `coll-${oldSlug}`) {
           p.collectionId = `coll-${cat.slug}`;
           p.collection_id = `coll-${cat.slug}`;
+          touched = true;
         }
         if (p.category && (p.category.toLowerCase() === oldSlug || p.category.toLowerCase() === cleanId)) {
           p.category = cat.name;
+          touched = true;
         }
+        if (touched) mysqlAffectedProducts.add(p.id);
       });
     }
 
@@ -905,7 +911,30 @@ router.put("/category/:identifier", (req, res) => {
         }
         p.secondaryCategories = sec;
         p.secondary_categories = sec;
+        mysqlAffectedProducts.add(p.id);
       });
+    }
+
+    // Mirror product reference changes into MySQL
+    if (isMysqlConnected() && mysqlAffectedProducts.size > 0) {
+      try {
+        const pool = getPool();
+        for (const pid of mysqlAffectedProducts) {
+          const row = store.products.find((p) => p.id === pid);
+          if (!row) continue;
+          await pool.query(
+            "UPDATE products SET category_id = ?, category_name = ?, collection_id = ?, collection_name = ?, secondary_categories_json = ?, updated_at = NOW() WHERE id = ?",
+            [
+              row.category_id || row.categoryId || "",
+              row.category || row.category_name || "",
+              row.collection_id || row.collectionId || "",
+              row.collection || row.collection_name || "",
+              JSON.stringify(row.secondaryCategories || row.secondary_categories || []),
+              pid,
+            ]
+          );
+        }
+      } catch (_) {}
     }
 
     // Sync collection_seo

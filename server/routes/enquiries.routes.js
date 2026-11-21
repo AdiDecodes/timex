@@ -330,25 +330,34 @@ router.post("/", async (req, res) => {
   };
 
   try {
+    let savedToMysql = false;
     if (isMysqlConnected()) {
-      const pool = getPool();
-      await pool.query(
-        `INSERT INTO enquiries (id, type, name, email, phone, company, message, status, page_source, details_json)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          record.id,
-          record.type,
-          record.name,
-          record.email,
-          record.phone,
-          record.company,
-          record.message,
-          record.status,
-          record.page_source,
-          record.details_json,
-        ]
-      );
-    } else {
+      try {
+        const pool = getPool();
+        await pool.query(
+          `INSERT INTO enquiries (id, type, name, email, phone, company, message, status, page_source, details_json)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            record.id,
+            record.type,
+            record.name,
+            record.email,
+            record.phone,
+            record.company,
+            record.message,
+            record.status,
+            record.page_source,
+            record.details_json,
+          ]
+        );
+        savedToMysql = true;
+      } catch (dbErr) {
+        // NEVER lose a lead: if the MySQL insert fails (missing table, lock, etc.),
+        // persist the enquiry into the local store instead.
+        console.error("[Enquiry] MySQL insert failed, saving to fallback store:", dbErr.message);
+      }
+    }
+    if (!savedToMysql) {
       const store = loadFallbackStore();
       store.enquiries = [record, ...(store.enquiries || [])];
       saveFallbackStore(store);
