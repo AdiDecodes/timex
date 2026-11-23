@@ -828,15 +828,21 @@ const PRODUCT_COLUMNS = [
   "available_colors_json", "color_hexes_json",
   "is_active", "is_new_arrival", "is_bestseller", "show_tile_of_spain_badge",
   "meta_title", "meta_description", "keywords",
+  "is_trashed", "available_sizes_json", "color_images_json", "size_images_json", "spaces_json",
+  "tiles_by_space", "combination_images_json", "combination_product_mappings_json",
+  "edge_type", "weight", "kg_per_box", "pcs_per_box", "packing_details", "sft_per_box",
+  "shape", "shapes_json", "tiles_by_shape", "custom_shape", "tiles_by_size",
+  "catalogue_url", "catalogue_name", "catalogue_media_id", "product_pdf",
+  "video_url", "video_position", "video_enabled",
 ];
 
 function productColumnValues(p) {
   return {
     id: p.id,
-    sku: p.sku,
+    sku: p.sku || `TMX-SKU-${p.code || p.id}`,
     slug: p.slug,
     name: p.name,
-    code: p.code,
+    code: p.code || p.slug,
     barcode: p.barcode || null,
     description: p.description || "",
     price: p.price || 0,
@@ -853,14 +859,14 @@ function productColumnValues(p) {
     material: p.material || "",
     origin: p.origin || "",
     color: p.color || "",
-    application: p.application || "",
-    pattern: p.pattern || "",
-    water_absorption: null,
+    application: p.application || p.usage || "",
+    pattern: p.pattern || p.tilePattern || "",
+    water_absorption: p.water_absorption || p.waterAbsorption || null,
     images_json: JSON.stringify(p.images || []),
-    space_images_json: p.space_images_json || JSON.stringify(p.spaceImages || {}),
+    space_images_json: p.space_images_json || JSON.stringify(p.spaceImages || p.space_images || {}),
     secondary_categories_json: p.secondary_categories_json || JSON.stringify(p.secondaryCategories || p.secondary_categories || []),
     subcategories_json: p.subcategories_json || JSON.stringify(p.subcategories || []),
-    available_colors_json: JSON.stringify(p.availableColors || []),
+    available_colors_json: JSON.stringify(p.availableColors || (p.color ? [p.color] : [])),
     color_hexes_json: JSON.stringify(p.colorHexes || p.color_hexes || {}),
     is_active: p.is_active !== false && p.isActive !== false,
     is_new_arrival: Boolean(p.is_new_arrival || p.isNewArrival),
@@ -869,6 +875,32 @@ function productColumnValues(p) {
     meta_title: p.meta_title || p.metaTitle || `${p.name || ""} | Timex Ceramic`,
     meta_description: p.meta_description || p.metaDescription || p.description || "",
     keywords: p.keywords || "",
+    is_trashed: Boolean(p.is_trashed),
+    available_sizes_json: JSON.stringify(p.availableSizes || []),
+    color_images_json: JSON.stringify(p.colorImages || {}),
+    size_images_json: JSON.stringify(p.sizeImages || {}),
+    spaces_json: JSON.stringify(p.spaces || []),
+    tiles_by_space: p.tilesBySpace || p.tiles_by_space || "",
+    combination_images_json: JSON.stringify(p.combinationImages || {}),
+    combination_product_mappings_json: JSON.stringify(p.combinationProductMappings || []),
+    edge_type: p.edgeType || p.edge_type || "",
+    weight: p.weight || "",
+    kg_per_box: p.kgPerBox || p.kg_per_box || "",
+    pcs_per_box: p.pcsPerBox || p.pcs_per_box || "",
+    packing_details: p.packingDetails || p.packing_details || "",
+    sft_per_box: p.sftPerBox || p.sft_per_box || "",
+    shape: p.shape || "",
+    shapes_json: JSON.stringify(p.shapes || []),
+    tiles_by_shape: p.tilesByShape || p.tiles_by_shape || "",
+    custom_shape: p.customShape || p.custom_shape || "",
+    tiles_by_size: p.tilesBySize || p.tiles_by_size || "",
+    catalogue_url: p.catalogueUrl || p.catalogue_url || "",
+    catalogue_name: p.catalogueName || p.catalogue_name || "",
+    catalogue_media_id: p.catalogueMediaId || p.catalogue_media_id || "",
+    product_pdf: p.productPdf || p.product_pdf || "",
+    video_url: p.videoUrl || p.video_url || "",
+    video_position: parseInt(p.videoPosition || p.video_position || 1, 10),
+    video_enabled: Boolean(p.videoEnabled || p.video_enabled),
   };
 }
 
@@ -1528,8 +1560,18 @@ router.delete("/:id", async (req, res) => {
     current.is_active = false;
     current.deleted_at = new Date().toISOString();
     current.deleted_by = req.body?.deletedBy || "admin";
-    // Note: MySQL has no trash columns; store.json is the trash authority and
-    // GET endpoints merge that state back in (see mergeStoreProduct).
+
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query(
+          "UPDATE products SET is_trashed = TRUE, is_active = FALSE WHERE id = ? OR slug = ? OR code = ?",
+          [current.id, current.slug, current.code]
+        );
+      } catch (dbErr) {
+        console.warn("[Database] Could not flag product as trashed in MySQL:", dbErr.message);
+      }
+    }
 
     // Handle attached images safely:
     // If an image is ONLY used by this deleted product, flag it as trashed in store.media.

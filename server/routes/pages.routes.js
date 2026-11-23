@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { loadFallbackStore, saveFallbackStore } = require("../config/db");
+const { getPool, isMysqlConnected, loadFallbackStore, saveFallbackStore } = require("../config/db");
 
 const DEFAULT_PAGES = [
   { id: "page-home", title: "Home - Luxury Surfaces", slug: "home", path: "/", template: "Landing Page", status: "Published", metaTitle: "Timex Ceramic | International Premium Tiles", metaDescription: "Experience luxury surfaces with Timex Ceramic. Explore premium floor tiles, vitrified slabs, bathware, and interactive visualizers.", is_trashed: false },
@@ -58,7 +58,7 @@ router.get("/", (req, res) => {
 });
 
 // POST /api/v1/pages
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const data = req.body;
   if (!data.title || !data.path) {
     return res.status(400).json({ success: false, error: "Page title and path are required." });
@@ -87,6 +87,26 @@ router.post("/", (req, res) => {
     store.pages = [newPage, ...(store.pages || [])];
     saveFallbackStore(store);
 
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query(
+          `INSERT INTO pages (
+            id, title, slug, path, template, status, meta_title, meta_description, is_trashed, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+          ON DUPLICATE KEY UPDATE
+            title = VALUES(title), path = VALUES(path), template = VALUES(template),
+            status = VALUES(status), meta_title = VALUES(meta_title),
+            meta_description = VALUES(meta_description), is_trashed = VALUES(is_trashed),
+            updated_at = NOW()`,
+          [
+            newPage.id, newPage.title, newPage.slug, newPage.path, newPage.template,
+            newPage.status, newPage.metaTitle, newPage.metaDescription, false
+          ]
+        );
+      } catch (_) {}
+    }
+
     return res.status(201).json({ success: true, page: newPage });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
@@ -94,7 +114,7 @@ router.post("/", (req, res) => {
 });
 
 // PUT /api/v1/pages/:id
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const updates = req.body;
 
@@ -139,6 +159,18 @@ router.put("/:id", (req, res) => {
 
     saveFallbackStore(store);
 
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query(
+          `UPDATE pages SET
+            title = ?, path = ?, template = ?, status = ?, meta_title = ?, meta_description = ?, updated_at = NOW()
+           WHERE id = ? OR slug = ?`,
+          [updated.title, updated.path, updated.template, updated.status, updated.metaTitle, updated.metaDescription, updated.id, updated.slug]
+        );
+      } catch (_) {}
+    }
+
     return res.json({ success: true, page: updated });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
@@ -146,7 +178,7 @@ router.put("/:id", (req, res) => {
 });
 
 // DELETE /api/v1/pages/:id (SOFT DELETE -> Recycle Bin)
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const store = loadFallbackStore();
@@ -160,6 +192,14 @@ router.delete("/:id", (req, res) => {
     page.deleted_by = req.body?.deletedBy || "admin";
 
     saveFallbackStore(store);
+
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query("UPDATE pages SET is_trashed = TRUE, updated_at = NOW() WHERE id = ? OR slug = ?", [page.id, page.slug]);
+      } catch (_) {}
+    }
+
     return res.json({ success: true, message: `Page "${page.title}" moved to Recycle Bin.`, page });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
@@ -167,7 +207,7 @@ router.delete("/:id", (req, res) => {
 });
 
 // POST /api/v1/pages/:id/restore
-router.post("/:id/restore", (req, res) => {
+router.post("/:id/restore", async (req, res) => {
   const { id } = req.params;
   try {
     const store = loadFallbackStore();
@@ -181,6 +221,14 @@ router.post("/:id/restore", (req, res) => {
     page.deleted_by = null;
 
     saveFallbackStore(store);
+
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query("UPDATE pages SET is_trashed = FALSE, updated_at = NOW() WHERE id = ? OR slug = ?", [page.id, page.slug]);
+      } catch (_) {}
+    }
+
     return res.json({ success: true, message: `Page "${page.title}" restored.`, page });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
@@ -188,7 +236,7 @@ router.post("/:id/restore", (req, res) => {
 });
 
 // DELETE /api/v1/pages/:id/permanent
-router.delete("/:id/permanent", (req, res) => {
+router.delete("/:id/permanent", async (req, res) => {
   const { id } = req.params;
   try {
     const store = loadFallbackStore();
@@ -200,6 +248,13 @@ router.delete("/:id/permanent", (req, res) => {
     const page = store.pages[idx];
     store.pages.splice(idx, 1);
     saveFallbackStore(store);
+
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query("DELETE FROM pages WHERE id = ? OR slug = ?", [page.id, page.slug]);
+      } catch (_) {}
+    }
 
     return res.json({ success: true, message: `Page "${page.title}" permanently deleted.` });
   } catch (err) {

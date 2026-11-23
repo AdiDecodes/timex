@@ -562,7 +562,7 @@ router.get("/category/:identifier", (req, res) => {
 });
 
 // POST /api/v1/taxonomies/category
-router.post("/category", (req, res) => {
+router.post("/category", async (req, res) => {
   try {
     const {
       name,
@@ -714,6 +714,44 @@ router.post("/category", (req, res) => {
     });
 
     saveFallbackStore(store);
+
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query(
+          `INSERT INTO categories (
+            id, name, slug, description, banner, parent_id, media_id, status, display_order,
+            seo_title, meta_description, focus_keyword, canonical_url, og_title, og_description,
+            og_image, twitter_title, twitter_description, twitter_image, twitter_card,
+            schema_type, schema_json, custom_code, show_in_nav, show_in_explore, show_in_world_of_tiles,
+            redirect_urls_json, is_trashed, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+          ON DUPLICATE KEY UPDATE
+            name = VALUES(name), description = VALUES(description), banner = VALUES(banner),
+            status = VALUES(status), display_order = VALUES(display_order), seo_title = VALUES(seo_title),
+            meta_description = VALUES(meta_description), focus_keyword = VALUES(focus_keyword),
+            canonical_url = VALUES(canonical_url), og_title = VALUES(og_title), og_description = VALUES(og_description),
+            og_image = VALUES(og_image), schema_type = VALUES(schema_type), schema_json = VALUES(schema_json),
+            custom_code = VALUES(custom_code), show_in_nav = VALUES(show_in_nav), show_in_explore = VALUES(show_in_explore),
+            show_in_world_of_tiles = VALUES(show_in_world_of_tiles), redirect_urls_json = VALUES(redirect_urls_json),
+            is_trashed = VALUES(is_trashed), updated_at = NOW()`,
+          [
+            newCategory.id, newCategory.name, newCategory.slug, newCategory.description || "", newCategory.banner || "",
+            newCategory.parentId || null, newCategory.mediaId || null, newCategory.status || "published", newCategory.order || 1,
+            newCategory.seoTitle || newCategory.name, newCategory.metaDescription || newCategory.description || "",
+            newCategory.focusKeyword || "", newCategory.canonicalUrl || `/product-category/${newCategory.slug}`,
+            newCategory.ogTitle || newCategory.seoTitle || "", newCategory.ogDescription || newCategory.metaDescription || "",
+            newCategory.ogImage || "", newCategory.twitterTitle || "", newCategory.twitterDescription || "",
+            newCategory.twitterImage || "", newCategory.twitterCard || "summary_large_image",
+            newCategory.schemaType || "CollectionPage", newCategory.schemaJson || "", newCategory.customCode || "",
+            newCategory.showInNav !== false, newCategory.showInExplore !== false, newCategory.showInWorldOfTiles !== false,
+            JSON.stringify(newCategory.redirectUrls || []), Boolean(newCategory.is_trashed)
+          ]
+        );
+      } catch (dbErr) {
+        console.warn("[Database] Could not sync category to MySQL:", dbErr.message);
+      }
+    }
 
     return res.status(201).json({ success: true, category: newCategory, message: "Category created successfully." });
   } catch (err) {
@@ -997,6 +1035,45 @@ router.put("/category/:identifier", async (req, res) => {
     }
 
     saveFallbackStore(store);
+
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query(
+          `INSERT INTO categories (
+            id, name, slug, description, banner, parent_id, media_id, status, display_order,
+            seo_title, meta_description, focus_keyword, canonical_url, og_title, og_description,
+            og_image, twitter_title, twitter_description, twitter_image, twitter_card,
+            schema_type, schema_json, custom_code, show_in_nav, show_in_explore, show_in_world_of_tiles,
+            redirect_urls_json, is_trashed, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+          ON DUPLICATE KEY UPDATE
+            name = VALUES(name), description = VALUES(description), banner = VALUES(banner),
+            status = VALUES(status), display_order = VALUES(display_order), seo_title = VALUES(seo_title),
+            meta_description = VALUES(meta_description), focus_keyword = VALUES(focus_keyword),
+            canonical_url = VALUES(canonical_url), og_title = VALUES(og_title), og_description = VALUES(og_description),
+            og_image = VALUES(og_image), schema_type = VALUES(schema_type), schema_json = VALUES(schema_json),
+            custom_code = VALUES(custom_code), show_in_nav = VALUES(show_in_nav), show_in_explore = VALUES(show_in_explore),
+            show_in_world_of_tiles = VALUES(show_in_world_of_tiles), redirect_urls_json = VALUES(redirect_urls_json),
+            is_trashed = VALUES(is_trashed), updated_at = NOW()`,
+          [
+            cat.id, cat.name, cat.slug, cat.description || "", cat.banner || "",
+            cat.parentId || null, cat.mediaId || null, cat.status || "published", cat.order || 1,
+            cat.seoTitle || cat.name, cat.metaDescription || cat.description || "",
+            cat.focusKeyword || "", cat.canonicalUrl || `/product-category/${cat.slug}`,
+            cat.ogTitle || cat.seoTitle || "", cat.ogDescription || cat.metaDescription || "",
+            cat.ogImage || "", cat.twitterTitle || "", cat.twitterDescription || "",
+            cat.twitterImage || "", cat.twitterCard || "summary_large_image",
+            cat.schemaType || "CollectionPage", cat.schemaJson || "", cat.customCode || "",
+            cat.showInNav !== false, cat.showInExplore !== false, cat.showInWorldOfTiles !== false,
+            JSON.stringify(cat.redirectUrls || []), Boolean(cat.is_trashed)
+          ]
+        );
+      } catch (dbErr) {
+        console.warn("[Database] Could not sync updated category to MySQL:", dbErr.message);
+      }
+    }
+
     return res.json({ success: true, category: cat, message: "Category updated successfully." });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });

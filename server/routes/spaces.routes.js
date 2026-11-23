@@ -308,7 +308,7 @@ router.get("/:slug/products", async (req, res) => {
 });
 
 // POST /api/v1/spaces (create new space)
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const raw = req.body || {};
     if (!raw.name || !raw.name.trim()) {
@@ -371,6 +371,44 @@ router.post("/", (req, res) => {
 
     saveFallbackStore(store);
 
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query(
+          `INSERT INTO spaces (
+            id, name, slug, space_area, page_title, description, image, media_id,
+            status, display_order, seo_title, meta_description, focus_keyword,
+            secondary_keywords, canonical_url, robots_index, robots_follow,
+            og_title, og_description, og_image, schema_type, schema_data, seo_score,
+            is_trashed, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+          ON DUPLICATE KEY UPDATE
+            name = VALUES(name), space_area = VALUES(space_area), page_title = VALUES(page_title),
+            description = VALUES(description), image = VALUES(image), status = VALUES(status),
+            display_order = VALUES(display_order), seo_title = VALUES(seo_title),
+            meta_description = VALUES(meta_description), focus_keyword = VALUES(focus_keyword),
+            secondary_keywords = VALUES(secondary_keywords), canonical_url = VALUES(canonical_url),
+            og_title = VALUES(og_title), og_description = VALUES(og_description),
+            og_image = VALUES(og_image), schema_type = VALUES(schema_type),
+            schema_data = VALUES(schema_data), seo_score = VALUES(seo_score),
+            is_trashed = VALUES(is_trashed), updated_at = NOW()`,
+          [
+            newSpace.id, newSpace.name, newSpace.slug, newSpace.spaceArea || newSpace.name,
+            newSpace.pageTitle || newSpace.name, newSpace.description || "", newSpace.image || "",
+            newSpace.mediaId || null, newSpace.status || "published", newSpace.order || 1,
+            newSpace.seoTitle || newSpace.name, newSpace.metaDescription || newSpace.description || "",
+            newSpace.focusKeyword || "", newSpace.secondaryKeywords || "", newSpace.canonicalUrl || `/${newSpace.slug}`,
+            newSpace.robotsIndex !== false, newSpace.robotsFollow !== false, newSpace.ogTitle || newSpace.seoTitle || "",
+            newSpace.ogDescription || newSpace.metaDescription || "", newSpace.ogImage || newSpace.image || "",
+            newSpace.schemaType || "CollectionPage", newSpace.schemaData || "", newSpace.seoScore || 80,
+            Boolean(newSpace.is_trashed)
+          ]
+        );
+      } catch (dbErr) {
+        console.warn("[Database] Could not sync space to MySQL:", dbErr.message);
+      }
+    }
+
     return res.status(201).json({ success: true, space: newSpace, message: "Space created successfully." });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
@@ -378,7 +416,7 @@ router.post("/", (req, res) => {
 });
 
 // PUT /api/v1/spaces/:slug
-router.put("/:slug", (req, res) => {
+router.put("/:slug", async (req, res) => {
   try {
     const store = loadFallbackStore();
     const spaces = ensureSpacesInitialized(store);
@@ -421,6 +459,44 @@ router.put("/:slug", (req, res) => {
     spaces[idx] = updated;
     store.tiles_by_space = spaces;
     saveFallbackStore(store);
+
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query(
+          `INSERT INTO spaces (
+            id, name, slug, space_area, page_title, description, image, media_id,
+            status, display_order, seo_title, meta_description, focus_keyword,
+            secondary_keywords, canonical_url, robots_index, robots_follow,
+            og_title, og_description, og_image, schema_type, schema_data, seo_score,
+            is_trashed, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+          ON DUPLICATE KEY UPDATE
+            name = VALUES(name), space_area = VALUES(space_area), page_title = VALUES(page_title),
+            description = VALUES(description), image = VALUES(image), status = VALUES(status),
+            display_order = VALUES(display_order), seo_title = VALUES(seo_title),
+            meta_description = VALUES(meta_description), focus_keyword = VALUES(focus_keyword),
+            secondary_keywords = VALUES(secondary_keywords), canonical_url = VALUES(canonical_url),
+            og_title = VALUES(og_title), og_description = VALUES(og_description),
+            og_image = VALUES(og_image), schema_type = VALUES(schema_type),
+            schema_data = VALUES(schema_data), seo_score = VALUES(seo_score),
+            is_trashed = VALUES(is_trashed), updated_at = NOW()`,
+          [
+            updated.id, updated.name, updated.slug, updated.spaceArea || updated.name,
+            updated.pageTitle || updated.name, updated.description || "", updated.image || "",
+            updated.mediaId || null, updated.status || "published", updated.order || 1,
+            updated.seoTitle || updated.name, updated.metaDescription || updated.description || "",
+            updated.focusKeyword || "", updated.secondaryKeywords || "", updated.canonicalUrl || `/${updated.slug}`,
+            updated.robotsIndex !== false, updated.robotsFollow !== false, updated.ogTitle || updated.seoTitle || "",
+            updated.ogDescription || updated.metaDescription || "", updated.ogImage || updated.image || "",
+            updated.schemaType || "CollectionPage", updated.schemaData || "", updated.seoScore || 80,
+            Boolean(updated.is_trashed)
+          ]
+        );
+      } catch (dbErr) {
+        console.warn("[Database] Could not sync updated space to MySQL:", dbErr.message);
+      }
+    }
 
     return res.json({ success: true, space: updated, message: "Space updated successfully" });
   } catch (err) {
