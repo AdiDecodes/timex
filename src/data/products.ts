@@ -80,7 +80,7 @@ export interface Product {
   relatedProductIds: string[];
   availableSizes?: string[];
   availableColors?: string[];
-  colorImages?: Record<string, string>;
+  colorImages?: Record<string, string | string[]>;
   combinationImages?: Record<string, string>;
   combinationProductMappings?: any[];
   combination_product_mappings?: any[];

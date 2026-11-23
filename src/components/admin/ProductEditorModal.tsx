@@ -1733,10 +1733,16 @@ export function ProductEditorModal({
     const currentColors = (form.availableColors || []).map((c) => String(c).trim()).filter(Boolean);
     const currentSizes = (form.availableSizes || []).map((s) => String(s).trim()).filter(Boolean);
 
-    const cleanColorImages: Record<string, string> = {};
+    const cleanColorImages: Record<string, string | string[]> = {};
     if (form.colorImages && typeof form.colorImages === "object") {
       currentColors.forEach((c) => {
-        if (form.colorImages![c]) cleanColorImages[c] = form.colorImages![c];
+        const val = form.colorImages![c];
+        if (Array.isArray(val)) {
+          const arr = val.filter((x): x is string => typeof x === "string" && Boolean(x.trim()));
+          if (arr.length > 0) cleanColorImages[c] = arr;
+        } else if (typeof val === "string" && val.trim()) {
+          cleanColorImages[c] = val.trim();
+        }
       });
     }
 
@@ -3206,142 +3212,236 @@ export function ProductEditorModal({
                     <p className="text-xs text-gray-500 italic py-2">No colours configured yet. Add a colour below.</p>
                   ) : (
                     (form.availableColors || []).map((color, idx) => {
-                      const assignedImg = form.colorImages?.[color];
+                      const colorPhotos: string[] = (() => {
+                        const raw = form.colorImages?.[color];
+                        if (!raw) return [];
+                        if (Array.isArray(raw)) return raw.filter((x): x is string => typeof x === "string" && Boolean(x.trim()));
+                        if (typeof raw === "string" && raw.trim()) return [raw.trim()];
+                        return [];
+                      })();
+                      const primaryImg = colorPhotos[0] || null;
                       const hexColor = form.colorHexes?.[color] || form.color_hexes?.[color] || getColorPreview(color);
 
                       return (
                         <div
                           key={`${color}-${idx}`}
-                          className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3.5 bg-[#111827] border border-white/10 rounded-2xl gap-3 hover:border-white/20 transition-all"
+                          className="flex flex-col p-4 bg-[#111827] border border-white/10 rounded-2xl gap-3.5 hover:border-white/20 transition-all"
                         >
-                          {/* Color Swatch Picker & Color Name */}
-                          <div className="flex items-center gap-3">
-                            <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-black/40 border border-white/10 shrink-0">
-                              {assignedImg ? (
-                                <img
-                                  src={getAdminThumbnailUrl(assignedImg, 120)}
-                                  alt={color}
-                                  loading="lazy"
-                                  decoding="async"
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    if (e.currentTarget.src !== assignedImg) {
-                                      e.currentTarget.src = assignedImg;
-                                    }
-                                  }}
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-500">
-                                  <ImageIcon className="w-5 h-5" />
-                                </div>
-                              )}
-                            </div>
+                          {/* Row Top Header: Swatch, Name, Hex & Action Controls */}
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                            {/* Color Swatch Picker & Color Name */}
+                            <div className="flex items-center gap-3">
+                              <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-black/40 border border-white/10 shrink-0">
+                                {primaryImg ? (
+                                  <img
+                                    src={getAdminThumbnailUrl(primaryImg, 120)}
+                                    alt={color}
+                                    loading="lazy"
+                                    decoding="async"
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      if (e.currentTarget.src !== primaryImg) {
+                                        e.currentTarget.src = primaryImg;
+                                      }
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-gray-500">
+                                    <ImageIcon className="w-5 h-5" />
+                                  </div>
+                                )}
+                              </div>
 
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-bold text-white">{color}</span>
-                                <div className="flex items-center gap-1.5 bg-black/50 px-2 py-0.5 rounded-lg border border-white/10 shrink-0">
-                                  <input
-                                    type="color"
-                                    value={hexColor.startsWith("#") ? hexColor : "#ffffff"}
-                                    onChange={(e) => {
-                                      const val = e.target.value;
-                                      setForm((prev) => ({
-                                        ...prev,
-                                        colorHexes: { ...(prev.colorHexes || {}), [color]: val },
-                                        color_hexes: { ...(prev.color_hexes || {}), [color]: val },
-                                      }));
-                                    }}
-                                    className="w-4 h-4 rounded-full cursor-pointer bg-transparent border-0 p-0 shadow-xs shrink-0"
-                                    title={`Click to pick hex color for ${color} circle swatch`}
-                                  />
-                                  <input
-                                    type="text"
-                                    value={hexColor}
-                                    onChange={(e) => {
-                                      const val = e.target.value;
-                                      setForm((prev) => ({
-                                        ...prev,
-                                        colorHexes: { ...(prev.colorHexes || {}), [color]: val },
-                                        color_hexes: { ...(prev.color_hexes || {}), [color]: val },
-                                      }));
-                                    }}
-                                    className="w-16 bg-transparent border-0 text-[10px] font-mono text-gray-200 font-bold uppercase focus:outline-none focus:bg-white/10 rounded px-1"
-                                    placeholder="#ffffff"
-                                    title="Type or edit HEX color code (e.g. #ffffff, #b88e4f)"
-                                  />
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-bold text-white">{color}</span>
+                                  <div className="flex items-center gap-1.5 bg-black/50 px-2 py-0.5 rounded-lg border border-white/10 shrink-0">
+                                    <input
+                                      type="color"
+                                      value={hexColor.startsWith("#") ? hexColor : "#ffffff"}
+                                      onChange={(e) => {
+                                        const val = e.target.value;
+                                        setForm((prev) => ({
+                                          ...prev,
+                                          colorHexes: { ...(prev.colorHexes || {}), [color]: val },
+                                          color_hexes: { ...(prev.color_hexes || {}), [color]: val },
+                                        }));
+                                      }}
+                                      className="w-4 h-4 rounded-full cursor-pointer bg-transparent border-0 p-0 shadow-xs shrink-0"
+                                      title={`Click to pick hex color for ${color} circle swatch`}
+                                    />
+                                    <input
+                                      type="text"
+                                      value={hexColor}
+                                      onChange={(e) => {
+                                        const val = e.target.value;
+                                        setForm((prev) => ({
+                                          ...prev,
+                                          colorHexes: { ...(prev.colorHexes || {}), [color]: val },
+                                          color_hexes: { ...(prev.color_hexes || {}), [color]: val },
+                                        }));
+                                      }}
+                                      className="w-16 bg-transparent border-0 text-[10px] font-mono text-gray-200 font-bold uppercase focus:outline-none focus:bg-white/10 rounded px-1"
+                                      placeholder="#ffffff"
+                                      title="Type or edit HEX color code (e.g. #ffffff, #b88e4f)"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="mt-1 flex items-center gap-2">
+                                  {colorPhotos.length === 0 ? (
+                                    <span className="text-[10px] text-gray-500">No specific photo assigned</span>
+                                  ) : colorPhotos.length === 1 ? (
+                                    <span className="text-[10px] text-emerald-400 font-medium inline-flex items-center gap-1">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                                      1 photo assigned (Primary)
+                                    </span>
+                                  ) : (
+                                    <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20 inline-flex items-center gap-1">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                                      {colorPhotos.length} photos assigned (1st is primary)
+                                    </span>
+                                  )}
                                 </div>
                               </div>
-                              <span className="text-[10px] text-gray-400 mt-0.5 block">
-                                {assignedImg ? (
-                                  <span className="text-emerald-400 font-medium">Mapped photo assigned</span>
-                                ) : (
-                                  "No specific photo assigned"
-                                )}
-                              </span>
+                            </div>
+
+                            {/* Action Buttons: Add Photo Dropdown, Manage/Media, Clear, Remove Colour */}
+                            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                              <select
+                                value=""
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  if (!val) return;
+                                  setForm((prev) => {
+                                    const raw = prev.colorImages?.[color];
+                                    const current = Array.isArray(raw)
+                                      ? [...raw]
+                                      : (typeof raw === "string" && raw ? [raw] : []);
+                                    if (current.includes(val)) return prev;
+                                    return {
+                                      ...prev,
+                                      colorImages: {
+                                        ...(prev.colorImages || {}),
+                                        [color]: [...current, val],
+                                      },
+                                    };
+                                  });
+                                }}
+                                className="bg-[#0c1220] border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-gray-300 focus:outline-none focus:border-[#c5a880] cursor-pointer"
+                              >
+                                <option value="">+ Add Gallery Photo...</option>
+                                {(form.images || []).map((imgUrl, imgIdx) => (
+                                  <option key={imgUrl} value={imgUrl} disabled={colorPhotos.includes(imgUrl)}>
+                                    Photo {imgIdx + 1} {colorPhotos.includes(imgUrl) ? "(Added)" : ""}
+                                  </option>
+                                ))}
+                              </select>
+
+                              <button
+                                type="button"
+                                onClick={() => setGalleryPickerTarget({ type: "color", key: color })}
+                                className="px-3 py-1.5 bg-[#c5a880]/15 hover:bg-[#c5a880] hover:text-black text-[#c5a880] text-xs font-semibold rounded-xl border border-[#c5a880]/30 transition-all cursor-pointer inline-flex items-center gap-1.5 shadow-xs"
+                              >
+                                <ImageIcon className="w-3.5 h-3.5" />
+                                <span>{colorPhotos.length > 0 ? "Select Photos" : "Assign Photos"}</span>
+                              </button>
+
+                              {colorPhotos.length > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setForm((prev) => {
+                                      const copy = { ...(prev.colorImages || {}) };
+                                      delete copy[color];
+                                      return { ...prev, colorImages: copy };
+                                    });
+                                  }}
+                                  className="p-1.5 text-gray-400 hover:text-amber-400 hover:bg-white/5 rounded-xl transition-colors cursor-pointer"
+                                  title={`Remove all photos for ${color}`}
+                                >
+                                  <RotateCcw className="w-4 h-4" />
+                                </button>
+                              )}
+
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveColor(idx)}
+                                className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-white/5 rounded-xl transition-colors cursor-pointer"
+                                title={`Remove colour ${color}`}
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
                             </div>
                           </div>
 
-                          {/* Photo Dropdown & Action Controls */}
-                          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
-                            <select
-                              value={assignedImg || ""}
-                              onChange={(e) => {
-                                const val = e.target.value;
-                                setForm((prev) => {
-                                  const copy = { ...(prev.colorImages || {}) };
-                                  if (val) {
-                                    copy[color] = val;
-                                  } else {
-                                    delete copy[color];
-                                  }
-                                  return { ...prev, colorImages: copy };
-                                });
-                              }}
-                              className="bg-[#0c1220] border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#c5a880] cursor-pointer"
-                            >
-                              <option value="">-- Select Photo --</option>
-                              {(form.images || []).map((imgUrl, imgIdx) => (
-                                <option key={imgUrl} value={imgUrl}>
-                                  Photo {imgIdx + 1}
-                                </option>
-                              ))}
-                            </select>
+                          {/* Multi-Photo Thumbnails Strip */}
+                          {colorPhotos.length > 0 && (
+                            <div className="pt-2 border-t border-white/5">
+                              <div className="flex flex-wrap items-center gap-2">
+                                {colorPhotos.map((photoUrl, pIdx) => (
+                                  <div
+                                    key={`${photoUrl}-${pIdx}`}
+                                    className="relative group w-12 h-12 rounded-xl overflow-hidden bg-black/40 border border-white/15 hover:border-[#c5a880] transition-all shrink-0"
+                                  >
+                                    <img
+                                      src={getAdminThumbnailUrl(photoUrl, 120)}
+                                      alt={`${color} visual ${pIdx + 1}`}
+                                      loading="lazy"
+                                      decoding="async"
+                                      className="w-full h-full object-cover"
+                                      onError={(e) => {
+                                        if (e.currentTarget.src !== photoUrl) {
+                                          e.currentTarget.src = photoUrl;
+                                        }
+                                      }}
+                                    />
+                                    {/* Number / Primary Badge */}
+                                    <span
+                                      className={`absolute top-0.5 left-0.5 px-1 py-0.5 rounded text-[8px] font-mono font-bold leading-tight ${
+                                        pIdx === 0
+                                          ? "bg-[#c5a880] text-black"
+                                          : "bg-black/75 text-white"
+                                      }`}
+                                    >
+                                      {pIdx === 0 ? "★1" : `#${pIdx + 1}`}
+                                    </span>
+                                    {/* Delete Button */}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setForm((prev) => {
+                                          const raw = prev.colorImages?.[color];
+                                          const current = Array.isArray(raw)
+                                            ? raw
+                                            : (typeof raw === "string" && raw ? [raw] : []);
+                                          const updated = current.filter((_, i) => i !== pIdx);
+                                          const copy = { ...(prev.colorImages || {}) };
+                                          if (updated.length > 0) copy[color] = updated;
+                                          else delete copy[color];
+                                          return { ...prev, colorImages: copy };
+                                        });
+                                      }}
+                                      className="absolute top-0.5 right-0.5 p-0.5 rounded-md bg-black/80 hover:bg-red-600 text-gray-300 hover:text-white transition-colors cursor-pointer"
+                                      title={`Remove photo #${pIdx + 1} from ${color}`}
+                                    >
+                                      <X className="w-3 h-3" />
+                                    </button>
+                                  </div>
+                                ))}
 
-                            <button
-                              type="button"
-                              onClick={() => setGalleryPickerTarget({ type: "color", key: color })}
-                              className="px-3 py-1.5 bg-white/5 hover:bg-[#c5a880] hover:text-black text-gray-300 text-xs font-semibold rounded-xl border border-white/10 transition-colors cursor-pointer"
-                            >
-                              {assignedImg ? "Change Media" : "Media Library"}
-                            </button>
-
-                            {assignedImg && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setForm((prev) => {
-                                    const copy = { ...(prev.colorImages || {}) };
-                                    delete copy[color];
-                                    return { ...prev, colorImages: copy };
-                                  });
-                                }}
-                                className="p-1.5 text-gray-400 hover:text-amber-400 hover:bg-white/5 rounded-xl transition-colors cursor-pointer"
-                                title="Unassign photo"
-                              >
-                                <RotateCcw className="w-4 h-4" />
-                              </button>
-                            )}
-
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveColor(idx)}
-                              className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-white/5 rounded-xl transition-colors cursor-pointer"
-                              title={`Remove colour ${color}`}
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
+                                {/* Quick inline + Add Photo button */}
+                                <button
+                                  type="button"
+                                  onClick={() => setGalleryPickerTarget({ type: "color", key: color })}
+                                  className="w-12 h-12 rounded-xl border border-dashed border-white/20 hover:border-[#c5a880] hover:bg-[#c5a880]/10 flex flex-col items-center justify-center text-gray-400 hover:text-[#c5a880] transition-colors cursor-pointer shrink-0"
+                                  title={`Add more photos to ${color}`}
+                                >
+                                  <Plus className="w-4 h-4" />
+                                  <span className="text-[8px] font-bold">Add</span>
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       );
                     })
@@ -3676,7 +3776,9 @@ export function ProductEditorModal({
                             )}
                             {(() => {
                               const mappedSize = Object.entries(form.sizeImages || {}).find(([_, mapped]) => mapped === img)?.[0];
-                              const mappedColor = Object.entries(form.colorImages || {}).find(([_, mapped]) => mapped === img)?.[0];
+                              const mappedColor = Object.entries(form.colorImages || {}).find(([_, mapped]) =>
+                                Array.isArray(mapped) ? mapped.includes(img) : mapped === img
+                              )?.[0];
                               const mappedSpaces = Object.entries(form.spaceImages || {})
                                 .filter(([_, mapped]) => mapped === img)
                                 .map(([sp]) => sp);
@@ -4081,13 +4183,24 @@ export function ProductEditorModal({
                   }));
                 } else if (mediaPickerTarget.type === "color" && mediaPickerTarget.key) {
                   const targetKey = mediaPickerTarget.key;
-                  setForm((prev) => ({
-                    ...prev,
-                    colorImages: {
-                      ...(prev.colorImages || {}),
-                      [targetKey]: media.url,
-                    },
-                  }));
+                  setForm((prev) => {
+                    const raw = prev.colorImages?.[targetKey];
+                    const current: string[] = Array.isArray(raw)
+                      ? [...raw]
+                      : (typeof raw === "string" && raw ? [raw] : []);
+                    const updated = current.includes(media.url) ? current : [...current, media.url];
+                    const galleryImages = (prev.images || []).includes(media.url)
+                      ? prev.images
+                      : [...(prev.images || []), media.url];
+                    return {
+                      ...prev,
+                      images: galleryImages,
+                      colorImages: {
+                        ...(prev.colorImages || {}),
+                        [targetKey]: updated,
+                      },
+                    };
+                  });
                 } else if (mediaPickerTarget.type === "space" && mediaPickerTarget.key) {
                   const targetKey = mediaPickerTarget.key;
                   const slugKey = slugify(targetKey);
@@ -4114,138 +4227,195 @@ export function ProductEditorModal({
       )}
 
       {/* GALLERY / MEDIA ASSIGNMENT MODAL FOR SIZE & COLOUR */}
-      {galleryPickerTarget && (
-        <div className="fixed inset-0 z-[110] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0e1628] border border-white/15 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <div>
-                <span className="text-[10px] font-bold text-[#c5a880] uppercase tracking-wider block">
-                  Image Assignment
-                </span>
-                <h3 className="font-serif text-lg font-bold text-white">
-                  Assign Image for {galleryPickerTarget.type === "size" ? "Size" : galleryPickerTarget.type === "color" ? "Colour" : "Space"}: {galleryPickerTarget.key}
-                </h3>
+      {galleryPickerTarget && (() => {
+        const isColorPicker = galleryPickerTarget.type === "color";
+        const assignedColorPhotos: string[] = (() => {
+          if (!isColorPicker) return [];
+          const raw = form.colorImages?.[galleryPickerTarget.key];
+          if (!raw) return [];
+          if (Array.isArray(raw)) return raw.filter((x): x is string => typeof x === "string" && Boolean(x.trim()));
+          if (typeof raw === "string" && raw.trim()) return [raw.trim()];
+          return [];
+        })();
+
+        return (
+          <div className="fixed inset-0 z-[110] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-[#0e1628] border border-white/15 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-5">
+              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                <div>
+                  <span className="text-[10px] font-bold text-[#c5a880] uppercase tracking-wider block">
+                    {isColorPicker ? "Multi-Photo Assignment" : "Image Assignment"}
+                  </span>
+                  <h3 className="font-serif text-lg font-bold text-white">
+                    {isColorPicker
+                      ? `Select Photos for Colour: ${galleryPickerTarget.key}`
+                      : `Assign Image for ${galleryPickerTarget.type === "size" ? "Size" : "Space"}: ${galleryPickerTarget.key}`}
+                  </h3>
+                  {isColorPicker && (
+                    <p className="text-xs text-gray-400 mt-1">
+                      Click photos to toggle them. You can select multiple photos for this colour (1st is primary).
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setGalleryPickerTarget(null)}
+                  className="p-1.5 text-gray-400 hover:text-white rounded-lg cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setGalleryPickerTarget(null)}
-                className="p-1.5 text-gray-400 hover:text-white rounded-lg cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            {/* Existing Gallery Images */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-gray-300 block">
-                Choose from Existing Product Gallery ({(form.images || []).length} images)
-              </label>
-              {(form.images || []).length === 0 ? (
-                <p className="text-xs text-gray-500 italic py-2">
-                  No images in product gallery yet. Pick from Media Library below.
-                </p>
-              ) : (
-                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2.5 max-h-48 overflow-y-auto p-2 bg-[#070b14] rounded-xl border border-white/5">
-                  {(form.images || []).map((imgUrl, i) => {
-                    const currentAssigned = galleryPickerTarget.type === "size"
-                      ? form.sizeImages?.[galleryPickerTarget.key]
-                      : galleryPickerTarget.type === "color"
-                      ? form.colorImages?.[galleryPickerTarget.key]
-                      : (getProductSpaceImage(form, galleryPickerTarget.key) || form.spaceImages?.[galleryPickerTarget.key]);
-                    const isSelected = currentAssigned === imgUrl;
+              {/* Existing Gallery Images */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-gray-300 block">
+                    Choose from Existing Gallery ({(form.images || []).length} images)
+                  </label>
+                  {isColorPicker && (
+                    <span className="text-[11px] font-bold text-[#c5a880]">
+                      {assignedColorPhotos.length} photo{assignedColorPhotos.length === 1 ? "" : "s"} selected
+                    </span>
+                  )}
+                </div>
+                {(form.images || []).length === 0 ? (
+                  <p className="text-xs text-gray-500 italic py-2">
+                    No images in product gallery yet. Pick from Media Library below.
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-2.5 max-h-56 overflow-y-auto p-2 bg-[#070b14] rounded-xl border border-white/5">
+                    {(form.images || []).map((imgUrl, i) => {
+                      const isSelected = isColorPicker
+                        ? assignedColorPhotos.includes(imgUrl)
+                        : (galleryPickerTarget.type === "size"
+                            ? form.sizeImages?.[galleryPickerTarget.key] === imgUrl
+                            : (getProductSpaceImage(form, galleryPickerTarget.key) || form.spaceImages?.[galleryPickerTarget.key]) === imgUrl);
+                      const colorIndex = isColorPicker ? assignedColorPhotos.indexOf(imgUrl) : -1;
 
-                    return (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => {
-                          const targetKey = galleryPickerTarget.key;
-                          if (galleryPickerTarget.type === "size") {
-                            setForm((prev) => ({
-                              ...prev,
-                              sizeImages: { ...(prev.sizeImages || {}), [targetKey]: imgUrl },
-                            }));
-                          } else if (galleryPickerTarget.type === "color") {
-                            setForm((prev) => ({
-                              ...prev,
-                              colorImages: { ...(prev.colorImages || {}), [targetKey]: imgUrl },
-                            }));
-                          } else if (galleryPickerTarget.type === "space") {
-                            const slugKey = slugify(targetKey);
-                            setForm((prev) => ({
-                              ...prev,
-                              spaceImages: {
-                                ...(prev.spaceImages || {}),
-                                [targetKey]: imgUrl,
-                                [slugKey]: imgUrl,
-                              },
-                              space_images: {
-                                ...((prev as any).space_images || {}),
-                                [targetKey]: imgUrl,
-                                [slugKey]: imgUrl,
-                              },
-                            }));
-                          }
-                          setGalleryPickerTarget(null);
-                        }}
-                        className={`relative aspect-square rounded-xl overflow-hidden border transition-all cursor-pointer group ${
-                          isSelected
-                            ? "border-[#c5a880] ring-2 ring-[#c5a880] shadow-md shadow-[#c5a880]/30 scale-[1.02]"
-                            : "border-white/10 hover:border-[#c5a880] hover:scale-105"
-                        }`}
-                      >
-                        <img
-                          src={getAdminThumbnailUrl(imgUrl, 160)}
-                          alt={`Gallery ${i}`}
-                          loading="lazy"
-                          decoding="async"
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            if (e.currentTarget.src !== imgUrl) {
-                              e.currentTarget.src = imgUrl;
+                      return (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => {
+                            const targetKey = galleryPickerTarget.key;
+                            if (isColorPicker) {
+                              setForm((prev) => {
+                                const raw = prev.colorImages?.[targetKey];
+                                const current: string[] = Array.isArray(raw)
+                                  ? [...raw]
+                                  : (typeof raw === "string" && raw ? [raw] : []);
+                                let updated: string[];
+                                if (current.includes(imgUrl)) {
+                                  updated = current.filter((u) => u !== imgUrl);
+                                } else {
+                                  updated = [...current, imgUrl];
+                                }
+                                const copy = { ...(prev.colorImages || {}) };
+                                if (updated.length > 0) {
+                                  copy[targetKey] = updated;
+                                } else {
+                                  delete copy[targetKey];
+                                }
+                                return { ...prev, colorImages: copy };
+                              });
+                              // Keep modal open so user can pick multiple photos
+                              return;
                             }
+
+                            if (galleryPickerTarget.type === "size") {
+                              setForm((prev) => ({
+                                ...prev,
+                                sizeImages: { ...(prev.sizeImages || {}), [targetKey]: imgUrl },
+                              }));
+                            } else if (galleryPickerTarget.type === "space") {
+                              const slugKey = slugify(targetKey);
+                              setForm((prev) => ({
+                                ...prev,
+                                spaceImages: {
+                                  ...(prev.spaceImages || {}),
+                                  [targetKey]: imgUrl,
+                                  [slugKey]: imgUrl,
+                                },
+                                space_images: {
+                                  ...((prev as any).space_images || {}),
+                                  [targetKey]: imgUrl,
+                                  [slugKey]: imgUrl,
+                                },
+                              }));
+                            }
+                            setGalleryPickerTarget(null);
                           }}
-                        />
-                        <div
-                          className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${
-                            isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                          className={`relative aspect-square rounded-xl overflow-hidden border transition-all cursor-pointer group ${
+                            isSelected
+                              ? "border-[#c5a880] ring-2 ring-[#c5a880] shadow-md shadow-[#c5a880]/30 scale-[1.02]"
+                              : "border-white/10 hover:border-[#c5a880] hover:scale-105"
                           }`}
                         >
-                          <Check className={`w-4 h-4 ${isSelected ? "text-[#c5a880] stroke-[3]" : "text-white"}`} />
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                          <img
+                            src={getAdminThumbnailUrl(imgUrl, 160)}
+                            alt={`Gallery ${i}`}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              if (e.currentTarget.src !== imgUrl) {
+                                e.currentTarget.src = imgUrl;
+                              }
+                            }}
+                          />
+                          {/* Selected Overlay & Badge */}
+                          <div
+                            className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${
+                              isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                            }`}
+                          >
+                            <Check className={`w-4 h-4 ${isSelected ? "text-[#c5a880] stroke-[3]" : "text-white"}`} />
+                          </div>
+                          {isSelected && isColorPicker && (
+                            <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 text-[9px] font-mono font-bold text-[#c5a880] border border-[#c5a880]/40">
+                              {colorIndex === 0 ? "★1" : `#${colorIndex + 1}`}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
 
-            {/* Or choose from Media Library */}
-            <div className="pt-2 border-t border-white/10 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => {
-                  const target = { ...galleryPickerTarget };
-                  setGalleryPickerTarget(null);
-                  setMediaPickerTarget(target);
-                }}
-                className="inline-flex items-center space-x-2 px-3.5 py-2 bg-[#c5a880] hover:bg-[#b0936d] text-black text-xs font-bold rounded-xl transition-colors cursor-pointer"
-              >
-                <ImageIcon className="w-4 h-4" />
-                <span>Select from Media Library</span>
-              </button>
+              {/* Modal Footer: Media Library button & Done / Cancel */}
+              <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const target = { ...galleryPickerTarget };
+                    setGalleryPickerTarget(null);
+                    setMediaPickerTarget(target);
+                  }}
+                  className="inline-flex items-center space-x-2 px-3.5 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                >
+                  <ImageIcon className="w-4 h-4" />
+                  <span>+ Media Library</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setGalleryPickerTarget(null)}
-                className="px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold rounded-xl cursor-pointer"
-              >
-                Cancel
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setGalleryPickerTarget(null)}
+                  className={`px-5 py-2 text-xs font-bold rounded-xl cursor-pointer transition-colors ${
+                    isColorPicker
+                      ? "bg-[#c5a880] hover:bg-[#b0936d] text-black shadow-md shadow-[#c5a880]/20"
+                      : "bg-white/5 hover:bg-white/10 text-gray-300"
+                  }`}
+                >
+                  {isColorPicker
+                    ? `Done (${assignedColorPhotos.length} selected)`
+                    : "Cancel"}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* FULL-IMAGE PREVIEW MODAL */}
       {previewImageUrl && (

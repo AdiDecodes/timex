@@ -138,20 +138,45 @@ function getSeoStorePath(): string {
   return path.resolve(process.cwd(), "server/data/store.json");
 }
 
+let _cachedSeoStore: any = null;
+let _cachedSeoMtime = 0;
+let _lastSeoCheck = 0;
+
+export function invalidateSeoCache(): void {
+  _cachedSeoStore = null;
+  _cachedSeoMtime = 0;
+  _lastSeoCheck = 0;
+}
+
 function readStoreFile(): any {
   if (typeof window !== "undefined") return {};
   const fs = getNodeFs();
   if (!fs) return {};
   try {
+    const now = Date.now();
+    // Return memory-cached store immediately if checked within last 3 seconds
+    if (_cachedSeoStore && now - _lastSeoCheck < 3000) {
+      return _cachedSeoStore;
+    }
+
     const storePath = getSeoStorePath();
     if (fs.existsSync(storePath)) {
+      const stat = fs.statSync(storePath);
+      if (_cachedSeoStore && stat.mtimeMs === _cachedSeoMtime) {
+        _lastSeoCheck = now;
+        return _cachedSeoStore;
+      }
+
       const content = fs.readFileSync(storePath, "utf8");
-      return JSON.parse(content);
+      _cachedSeoStore = JSON.parse(content);
+      _cachedSeoMtime = stat.mtimeMs;
+      _lastSeoCheck = now;
+      return _cachedSeoStore;
     }
   } catch (err) {
     console.warn("Could not read store.json in seo service:", err);
   }
-  return {};
+  return _cachedSeoStore || {};
 }
 
 function writeStoreFile(store: any): boolean {
@@ -161,6 +186,8 @@ function writeStoreFile(store: any): boolean {
   try {
     const storePath = getSeoStorePath();
     fs.writeFileSync(storePath, JSON.stringify(store, null, 2), "utf8");
+    _cachedSeoStore = store;
+    _lastSeoCheck = Date.now();
     return true;
   } catch (err) {
     console.error("Could not write store.json in seo service:", err);

@@ -55,9 +55,25 @@ export interface BlogCategoryItem {
   blogCount?: number;
 }
 
+let _cachedStoreData: any = null;
+let _cachedStoreMtime = 0;
+let _lastStoreCheck = 0;
+
+export function invalidateCategoriesCache(): void {
+  _cachedStoreData = null;
+  _cachedStoreMtime = 0;
+  _lastStoreCheck = 0;
+}
+
 function getStoreData(): any {
   if (typeof window === "undefined") {
     try {
+      const now = Date.now();
+      // Fast path: return in-memory cached store if checked within last 3 seconds
+      if (_cachedStoreData && now - _lastStoreCheck < 3000) {
+        return _cachedStoreData;
+      }
+
       const fs = eval("require")("fs");
       const path = eval("require")("path");
       const isServerless = Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
@@ -67,14 +83,23 @@ function getStoreData(): any {
           : path.resolve(process.cwd(), "server/data/store.json");
 
       if (fs.existsSync(storePath)) {
+        const stat = fs.statSync(storePath);
+        if (_cachedStoreData && stat.mtimeMs === _cachedStoreMtime) {
+          _lastStoreCheck = now;
+          return _cachedStoreData;
+        }
+
         const content = fs.readFileSync(storePath, "utf8");
-        return JSON.parse(content);
+        _cachedStoreData = JSON.parse(content);
+        _cachedStoreMtime = stat.mtimeMs;
+        _lastStoreCheck = now;
+        return _cachedStoreData;
       }
     } catch (e) {
       console.warn("Could not read store.json in categories service:", e);
     }
   }
-  return null;
+  return _cachedStoreData || null;
 }
 
 export const STANDARD_PRODUCT_CATEGORIES: CategoryItem[] = [

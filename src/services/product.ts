@@ -180,7 +180,7 @@ export function getStoredProducts(): any[] {
               : [];
 
             const rawColorImages = p.colorImages || {};
-            const cleanColorImages: Record<string, string> = {};
+            const cleanColorImages: Record<string, string | string[]> = {};
             availableColors.forEach((c: string) => {
               if (rawColorImages[c]) cleanColorImages[c] = rawColorImages[c];
             });

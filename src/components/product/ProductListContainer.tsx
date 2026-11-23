@@ -79,6 +79,8 @@ export function ProductListContainer({
   const activeOrigin = searchParams.get("origin") ?? (initialFilter?.key === "origin" ? initialFilter.value : "");
   const activeLook = searchParams.get("look") || "";
   const activeTag = searchParams.get("tag") || "";
+  const activeSort = (searchParams.get("sort") || "").toLowerCase().trim();
+  const isAlphabetic = activeSort === "alphabetic" || activeSort === "alpha" || activeSort === "a-z" || activeTag === "alphabetic";
   const activeFilter = (searchParams.get("filter") || "").toLowerCase().trim();
 
   const [liveProducts, setLiveProducts] = useState(initialProducts);
@@ -134,7 +136,7 @@ export function ProductListContainer({
       activeFilter === "featured-collections" ||
       activeFilter === "featured_collection";
 
-    return liveProducts.filter((p) => {
+    const filtered = liveProducts.filter((p) => {
       if (searchQuery && !matchProductSearch(p, searchQuery)) {
         return false;
       }
@@ -191,10 +193,22 @@ export function ProductListContainer({
       }
       return true;
     });
+
+    if (isAlphabetic) {
+      return [...filtered].sort((a, b) => {
+        const nameA = String(a.name || a.title || "").trim();
+        const nameB = String(b.name || b.title || "").trim();
+        return nameA.localeCompare(nameB, undefined, { sensitivity: "base", numeric: true });
+      });
+    }
+
+    return filtered;
   }, [
     liveProducts,
     searchQuery,
     activeTag,
+    activeSort,
+    isAlphabetic,
     activeCategory,
     activeApplication,
     activeMaterial,
@@ -217,6 +231,8 @@ export function ProductListContainer({
   }, [
     searchQuery,
     activeTag,
+    activeSort,
+    isAlphabetic,
     activeFilter,
     activeCategory,
     activeApplication,
@@ -432,6 +448,8 @@ export function ProductListContainer({
     activeSize ||
     activeOrigin ||
     activeLook ||
+    activeTag ||
+    isAlphabetic ||
     searchQuery
   );
 
@@ -565,6 +583,28 @@ export function ProductListContainer({
                   <X className="w-3 h-3 cursor-pointer hover:text-[#C95745]" onClick={() => setFilter("category", "")} />
                 </span>
               )}
+              {activeTag && (
+                <span className="text-[10px] bg-[#EDEAE4] border border-[#DED9D0] text-[#101B38] font-medium px-2.5 py-1 rounded-[2px] flex items-center space-x-1">
+                  <span>Tag: {activeTag === "new-arrival" ? "New Arrivals" : activeTag}</span>
+                  <X className="w-3 h-3 cursor-pointer hover:text-[#C95745]" onClick={() => setFilter("tag", "")} />
+                </span>
+              )}
+              {isAlphabetic && (
+                <span className="text-[10px] bg-[#EDEAE4] border border-[#DED9D0] text-[#101B38] font-medium px-2.5 py-1 rounded-[2px] flex items-center space-x-1">
+                  <span>Sort: Alphabetic</span>
+                  <X
+                    className="w-3 h-3 cursor-pointer hover:text-[#C95745]"
+                    onClick={() => {
+                      const params = new URLSearchParams(searchParams.toString());
+                      params.delete("sort");
+                      if (params.get("tag") === "alphabetic") params.delete("tag");
+                      const targetBase = currentBasePath.startsWith("/") ? currentBasePath : `/${currentBasePath}`;
+                      const qs = params.toString();
+                      router.push(qs ? `${targetBase}?${qs}` : targetBase);
+                    }}
+                  />
+                </span>
+              )}
               {!hasAnyFilterActive && (
                 <span className="text-xs text-gray-400 font-light">None</span>
               )}
@@ -580,12 +620,19 @@ export function ProductListContainer({
           </div>
 
           <div className="flex items-center space-x-3">
-            {/* Quick Tag Filters */}
+            {/* Quick Tag & Sort Filters */}
             <div className="hidden sm:flex items-center gap-1.5 p-1 bg-[#FCFBF8] rounded-[2px] border border-[#EDEAE4]">
               <button
-                onClick={() => setFilter("tag", "")}
+                onClick={() => {
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.delete("tag");
+                  params.delete("sort");
+                  const targetBase = currentBasePath.startsWith("/") ? currentBasePath : `/${currentBasePath}`;
+                  const qs = params.toString();
+                  router.push(qs ? `${targetBase}?${qs}` : targetBase);
+                }}
                 className={`px-3 py-1.5 rounded-[2px] text-xs font-semibold transition-all cursor-pointer ${
-                  !activeTag
+                  !activeTag && !isAlphabetic
                     ? "bg-[#101B38] text-[#FCFBF8] shadow-xs"
                     : "text-[#555555] hover:text-[#101B38]"
                 }`}
@@ -593,14 +640,48 @@ export function ProductListContainer({
                 All
               </button>
               <button
-                onClick={() => setFilter("tag", "new-arrival")}
+                onClick={() => {
+                  const params = new URLSearchParams(searchParams.toString());
+                  if (activeTag === "new-arrival") {
+                    params.delete("tag");
+                  } else {
+                    params.set("tag", "new-arrival");
+                    params.delete("sort");
+                  }
+                  const targetBase = currentBasePath.startsWith("/") ? currentBasePath : `/${currentBasePath}`;
+                  const qs = params.toString();
+                  router.push(qs ? `${targetBase}?${qs}` : targetBase);
+                }}
                 className={`px-3 py-1.5 rounded-[2px] text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                  activeTag === "new-arrival"
+                  activeTag === "new-arrival" && !isAlphabetic
                     ? "bg-[#C95745] text-[#FCFBF8] shadow-xs"
                     : "text-[#555555] hover:text-[#101B38]"
                 }`}
               >
                 <span>New Arrivals</span>
+              </button>
+              <button
+                onClick={() => {
+                  const params = new URLSearchParams(searchParams.toString());
+                  if (isAlphabetic) {
+                    params.delete("sort");
+                    if (params.get("tag") === "alphabetic") params.delete("tag");
+                  } else {
+                    params.set("sort", "alphabetic");
+                    params.delete("tag");
+                  }
+                  const targetBase = currentBasePath.startsWith("/") ? currentBasePath : `/${currentBasePath}`;
+                  const qs = params.toString();
+                  router.push(qs ? `${targetBase}?${qs}` : targetBase);
+                }}
+                className={`px-3 py-1.5 rounded-[2px] text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                  isAlphabetic
+                    ? "bg-[#101B38] text-[#FCFBF8] shadow-xs"
+                    : "text-[#555555] hover:text-[#101B38]"
+                }`}
+                title="Sort Alphabetically (A to Z)"
+              >
+                <span>Alphabetic</span>
               </button>
             </div>
 
@@ -724,7 +805,7 @@ export function ProductListContainer({
                       : "flex flex-col space-y-6"
                   }
               >
-                {paginatedProducts.map((prod) => {
+                {paginatedProducts.map((prod: any) => {
                   const inWishlist = wishlist.hasItem(prod.id, prod.slug);
 
                   if (viewMode === "list") {
@@ -872,6 +953,66 @@ export function ProductListContainer({
                 <div className="flex items-center justify-between border-b border-[#EDEAE4] pb-4">
                   <span className="font-serif text-xl font-bold text-[#101B38]">Refine Selection</span>
                   <X className="w-5 h-5 text-[#333333]/70 hover:text-[#101B38] cursor-pointer" onClick={() => setShowFilters(false)} />
+                </div>
+
+                {/* Mobile Quick View / Sort */}
+                <div className="space-y-2 pb-4 border-b border-[#EDEAE4]">
+                  <span className="text-[10px] font-bold tracking-wider text-[#101B38] uppercase block">View & Sort</span>
+                  <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#F7F5F0] rounded-[2px] border border-[#EDEAE4]">
+                    <button
+                      onClick={() => {
+                        const params = new URLSearchParams(searchParams.toString());
+                        params.delete("tag");
+                        params.delete("sort");
+                        const targetBase = currentBasePath.startsWith("/") ? currentBasePath : `/${currentBasePath}`;
+                        const qs = params.toString();
+                        router.push(qs ? `${targetBase}?${qs}` : targetBase);
+                        setShowFilters(false);
+                      }}
+                      className={`py-1.5 rounded-[2px] text-[11px] font-semibold text-center transition-all cursor-pointer ${
+                        !activeTag && !isAlphabetic ? "bg-[#101B38] text-[#FCFBF8]" : "text-[#555555]"
+                      }`}
+                    >
+                      All
+                    </button>
+                    <button
+                      onClick={() => {
+                        const params = new URLSearchParams(searchParams.toString());
+                        if (activeTag === "new-arrival") params.delete("tag");
+                        else { params.set("tag", "new-arrival"); params.delete("sort"); }
+                        const targetBase = currentBasePath.startsWith("/") ? currentBasePath : `/${currentBasePath}`;
+                        const qs = params.toString();
+                        router.push(qs ? `${targetBase}?${qs}` : targetBase);
+                        setShowFilters(false);
+                      }}
+                      className={`py-1.5 rounded-[2px] text-[11px] font-semibold text-center transition-all cursor-pointer ${
+                        activeTag === "new-arrival" && !isAlphabetic ? "bg-[#C95745] text-[#FCFBF8]" : "text-[#555555]"
+                      }`}
+                    >
+                      New
+                    </button>
+                    <button
+                      onClick={() => {
+                        const params = new URLSearchParams(searchParams.toString());
+                        if (isAlphabetic) {
+                          params.delete("sort");
+                          if (params.get("tag") === "alphabetic") params.delete("tag");
+                        } else {
+                          params.set("sort", "alphabetic");
+                          params.delete("tag");
+                        }
+                        const targetBase = currentBasePath.startsWith("/") ? currentBasePath : `/${currentBasePath}`;
+                        const qs = params.toString();
+                        router.push(qs ? `${targetBase}?${qs}` : targetBase);
+                        setShowFilters(false);
+                      }}
+                      className={`py-1.5 rounded-[2px] text-[11px] font-semibold text-center transition-all cursor-pointer ${
+                        isAlphabetic ? "bg-[#101B38] text-[#FCFBF8]" : "text-[#555555]"
+                      }`}
+                    >
+                      Alphabetic
+                    </button>
+                  </div>
                 </div>
 
                 {orderedFilterSections.map((section, sIdx) => {

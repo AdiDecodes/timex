@@ -30,8 +30,8 @@ interface ProductCardProps {
     show_tile_of_spain_badge?: boolean;
     spaceImages?: Record<string, string>;
     space_images?: Record<string, string>;
-    colorImages?: Record<string, string>;
-    color_images?: Record<string, string>;
+    colorImages?: Record<string, string | string[]>;
+    color_images?: Record<string, string | string[]>;
   };
   priority?: boolean;
   space?: string;

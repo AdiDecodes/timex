@@ -608,7 +608,11 @@ export function ProductDetailClient({ product: initialProduct, relatedProducts: 
 
     // 2. Color image fallback
     if (c && product.colorImages && product.colorImages[c]) {
-      return resolveProductImage(product.colorImages[c], product.categoryId, 0);
+      const colVal = product.colorImages[c];
+      const targetImg = Array.isArray(colVal)
+        ? colVal.find((x: any) => typeof x === "string" && x.trim())
+        : colVal;
+      if (targetImg) return resolveProductImage(targetImg, product.categoryId, 0);
     }
     if (c && Array.isArray(product.images)) {
       const match = product.images.find((img: string) => img.toLowerCase().includes(c.toLowerCase()));
@@ -679,9 +683,12 @@ export function ProductDetailClient({ product: initialProduct, relatedProducts: 
     if (prod.colorImages && typeof prod.colorImages === "object") {
       for (const color of colors) {
         const mapped = prod.colorImages[color];
-        if (mapped && typeof mapped === "string") {
-          const resolved = resolveProductImage(mapped, prod.categoryId, 0);
-          if (mapped === imgUrl || resolved === imgUrl || imgUrl.includes(mapped) || mapped.includes(imgUrl)) {
+        const mappedList: string[] = Array.isArray(mapped)
+          ? mapped.filter((x: any): x is string => typeof x === "string" && Boolean(x.trim()))
+          : (typeof mapped === "string" && mapped.trim() ? [mapped.trim()] : []);
+        for (const singleMapped of mappedList) {
+          const resolved = resolveProductImage(singleMapped, prod.categoryId, 0);
+          if (singleMapped === imgUrl || resolved === imgUrl || imgUrl.includes(singleMapped) || singleMapped.includes(imgUrl)) {
             return color;
           }
         }

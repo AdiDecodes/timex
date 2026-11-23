@@ -373,6 +373,7 @@ export function getProductSpaceImage(product: any, spaceNameOrSlug?: string): st
 
 /**
  * Retrieve color-variant image for a product (colorImages keyed by variant color name).
+ * Supports both single image string and array of image URLs (returns the first/primary photo).
  * Exact or case-insensitive key match only — never fuzzy — so the displayed variant
  * always matches the active color filter.
  */
@@ -390,15 +391,71 @@ export function getProductColorImage(product: any, colorName?: string): string |
   const targetTrimmed = colorName.trim();
   if (!targetTrimmed) return null;
 
-  if (typeof map[targetTrimmed] === "string" && map[targetTrimmed].trim()) {
-    return map[targetTrimmed].trim();
+  const extractFirst = (val: any): string | null => {
+    if (typeof val === "string" && val.trim()) return val.trim();
+    if (Array.isArray(val) && val.length > 0) {
+      const first = val.find((x: any) => typeof x === "string" && x.trim());
+      if (first) return (first as string).trim();
+    }
+    return null;
+  };
+
+  if (map[targetTrimmed] !== undefined) {
+    const first = extractFirst(map[targetTrimmed]);
+    if (first) return first;
   }
   const lowerTarget = targetTrimmed.toLowerCase();
   for (const [k, v] of Object.entries(map)) {
-    if (k.toLowerCase() === lowerTarget && typeof v === "string" && (v as string).trim()) {
-      return (v as string).trim();
+    if (k.toLowerCase() === lowerTarget) {
+      const first = extractFirst(v);
+      if (first) return first;
     }
   }
 
   return null;
+}
+
+/**
+ * Retrieve all color-variant images for a product (colorImages keyed by variant color name).
+ * Returns array of image URLs (whether configured as a single string or an array).
+ */
+export function getProductColorImages(product: any, colorName?: string): string[] {
+  if (!product || !colorName || typeof colorName !== "string") return [];
+
+  let map = product.colorImages || product.color_images;
+  if (!map && typeof product.color_images_json === "string") {
+    try {
+      map = JSON.parse(product.color_images_json);
+    } catch (_) {}
+  }
+  if (!map || typeof map !== "object") return [];
+
+  const targetTrimmed = colorName.trim();
+  if (!targetTrimmed) return [];
+
+  const extractList = (val: any): string[] => {
+    if (Array.isArray(val)) {
+      return val
+        .filter((x: any): x is string => typeof x === "string" && Boolean(x.trim()))
+        .map((x) => x.trim());
+    }
+    if (typeof val === "string" && val.trim()) {
+      return [val.trim()];
+    }
+    return [];
+  };
+
+  if (map[targetTrimmed] !== undefined) {
+    const list = extractList(map[targetTrimmed]);
+    if (list.length > 0) return list;
+  }
+  const lowerTarget = targetTrimmed.toLowerCase();
+  for (const [k, v] of Object.entries(map)) {
+    if (k.toLowerCase() === lowerTarget) {
+      const list = extractList(v);
+      if (list.length > 0) return list;
+    }
+  }
+
+  return [];
 }

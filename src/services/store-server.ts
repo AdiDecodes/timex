@@ -130,7 +130,7 @@ export async function saveProduct(input: any): Promise<{ success: boolean; produ
       : (typeof input.availableColors === "string" ? (input.availableColors as string).split(",").map((c: string) => c.trim()).filter(Boolean) : []);
 
     const rawColorImages = input.colorImages !== undefined ? input.colorImages : {};
-    const colorImages: Record<string, string> = {};
+    const colorImages: Record<string, string | string[]> = {};
     if (rawColorImages && typeof rawColorImages === "object") {
       availableColors.forEach((c: string) => {
         if (rawColorImages[c]) colorImages[c] = rawColorImages[c];

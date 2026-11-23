@@ -42,7 +42,7 @@ export interface ProductItem {
   origin?: string;
   color?: string;
   availableColors?: string[];
-  colorImages?: Record<string, string>;
+  colorImages?: Record<string, string | string[]>;
   colorHexes?: Record<string, string>;
   color_hexes?: Record<string, string>;
   application?: string;

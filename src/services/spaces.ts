@@ -2,22 +2,46 @@ import { SpaceItem, PREDEFINED_SPACES_MAP } from "@/types/spaces";
 import defaultSpaces from "../../server/data/defaultSpaces.json";
 import { normalizeImageUrl } from "@/utils/imageUrl";
 
+let _cachedSpaces: SpaceItem[] | null = null;
+let _cachedSpacesMtime = 0;
+let _lastSpacesCheck = 0;
+
+export function invalidateSpacesCache(): void {
+  _cachedSpaces = null;
+  _cachedSpacesMtime = 0;
+  _lastSpacesCheck = 0;
+}
+
 export function getStoredSpaces(options: { includeDrafts?: boolean } = {}): SpaceItem[] {
   let list: SpaceItem[] = [];
   if (typeof window === "undefined") {
     try {
-      const fs = eval("require")("fs");
-      const path = eval("require")("path");
-      const isServerless = Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
-      const storePath = isServerless && fs.existsSync("/tmp/data/store.json")
-        ? "/tmp/data/store.json"
-        : path.resolve(process.cwd(), "server/data/store.json");
+      const now = Date.now();
+      if (_cachedSpaces && now - _lastSpacesCheck < 3000) {
+        list = _cachedSpaces;
+      } else {
+        const fs = eval("require")("fs");
+        const path = eval("require")("path");
+        const isServerless = Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
+        const storePath = isServerless && fs.existsSync("/tmp/data/store.json")
+          ? "/tmp/data/store.json"
+          : path.resolve(process.cwd(), "server/data/store.json");
 
-      if (fs.existsSync(storePath)) {
-        const content = fs.readFileSync(storePath, "utf8");
-        const data = JSON.parse(content);
-        if (Array.isArray(data.tiles_by_space) && data.tiles_by_space.length > 0) {
-          list = data.tiles_by_space;
+        if (fs.existsSync(storePath)) {
+          const stat = fs.statSync(storePath);
+          if (_cachedSpaces && stat.mtimeMs === _cachedSpacesMtime) {
+            _lastSpacesCheck = now;
+            list = _cachedSpaces;
+          } else {
+            const content = fs.readFileSync(storePath, "utf8");
+            const data = JSON.parse(content);
+            if (Array.isArray(data.tiles_by_space) && data.tiles_by_space.length > 0) {
+              list = data.tiles_by_space;
+              _cachedSpaces = list;
+              _cachedSpacesMtime = stat.mtimeMs;
+              _lastSpacesCheck = now;
+            }
+          }
         }
       }
     } catch (e) {

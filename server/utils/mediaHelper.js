@@ -162,7 +162,7 @@ function calculateMediaUsage(urlOrFilename, store) {
         isUsed = true;
       }
       if (p.colorImages && typeof p.colorImages === "object") {
-        if (Object.values(p.colorImages).some(matchesUrl)) {
+        if (Object.values(p.colorImages).some(val => Array.isArray(val) ? val.some(matchesUrl) : matchesUrl(val))) {
           isUsed = true;
         }
       }
@@ -273,7 +273,11 @@ function buildMediaUsageIndex(store) {
       }
       if (p.colorImages && typeof p.colorImages === "object") {
         for (const img of Object.values(p.colorImages)) {
-          registerUsage(img, pItem);
+          if (Array.isArray(img)) {
+            for (const singleImg of img) registerUsage(singleImg, pItem);
+          } else {
+            registerUsage(img, pItem);
+          }
         }
       }
       if (p.catalogueUrl || p.catalogue) {
@@ -435,17 +439,20 @@ function seedInitialMedia(store) {
       }
       if (p.colorImages && typeof p.colorImages === "object") {
         Object.entries(p.colorImages).forEach(([color, img]) => {
-          if (img) {
-            addMediaEntry({
-              filename: `${p.slug || "product"}-${color.toLowerCase()}.jpg`,
-              originalName: `${p.name || "Product"} (${color})`,
-              url: img,
-              mimeType: "image/jpeg",
-              fileType: "image",
-              size: 210000,
-              dimensions: "1200 x 800",
-            });
-          }
+          const imgs = Array.isArray(img) ? img : (img ? [img] : []);
+          imgs.forEach((singleImg, imgIdx) => {
+            if (singleImg) {
+              addMediaEntry({
+                filename: `${p.slug || "product"}-${color.toLowerCase()}${imgs.length > 1 ? `-${imgIdx + 1}` : ""}.jpg`,
+                originalName: `${p.name || "Product"} (${color}${imgs.length > 1 ? ` #${imgIdx + 1}` : ""})`,
+                url: singleImg,
+                mimeType: "image/jpeg",
+                fileType: "image",
+                size: 210000,
+                dimensions: "1200 x 800",
+              });
+            }
+          });
         });
       }
     }
