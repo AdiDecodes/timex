@@ -312,7 +312,7 @@ router.get("/:id", (req, res) => {
 });
 
 // POST /api/v1/media/upload
-router.post("/upload", upload.any(), (req, res) => {
+router.post("/upload", upload.any(), async (req, res) => {
   try {
     const files = req.files || (req.file ? [req.file] : []);
     if (!files || files.length === 0) {
@@ -376,6 +376,33 @@ router.post("/upload", upload.any(), (req, res) => {
     store.media = [...uploadedMedia, ...(store.media || [])];
     saveFallbackStore(store);
 
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        for (const m of uploadedMedia) {
+          await pool.query(
+            `INSERT INTO media (
+              id, filename, original_name, url, mime_type, file_type, size, dimensions,
+              uploaded_by, alt_text, caption, is_trashed, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            ON DUPLICATE KEY UPDATE
+              filename = VALUES(filename), original_name = VALUES(original_name),
+              mime_type = VALUES(mime_type), file_type = VALUES(file_type),
+              size = VALUES(size), dimensions = VALUES(dimensions),
+              alt_text = VALUES(alt_text), caption = VALUES(caption),
+              is_trashed = VALUES(is_trashed), updated_at = NOW()`,
+            [
+              m.id, m.filename, m.originalName, m.url, m.mimeType, m.fileType,
+              m.size || 0, m.dimensions || "", m.uploadedBy || "admin",
+              m.altText || "", m.caption || "", false
+            ]
+          );
+        }
+      } catch (dbErr) {
+        console.warn("[Database] Could not sync uploaded media to MySQL:", dbErr.message);
+      }
+    }
+
     return res.status(201).json({
       success: true,
       count: uploadedMedia.length,
@@ -389,7 +416,7 @@ router.post("/upload", upload.any(), (req, res) => {
 });
 
 // PATCH /api/v1/media/:id
-router.patch("/:id", (req, res) => {
+router.patch("/:id", async (req, res) => {
   const { id } = req.params;
   const updates = req.body;
 
@@ -406,6 +433,16 @@ router.patch("/:id", (req, res) => {
     if (updates.originalName !== undefined) media.originalName = updates.originalName;
 
     saveFallbackStore(store);
+
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query(
+          "UPDATE media SET alt_text = ?, caption = ?, original_name = ? WHERE id = ?",
+          [media.altText || "", media.caption || "", media.originalName || "", media.id]
+        );
+      } catch (_) {}
+    }
     return res.json({ success: true, media });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
@@ -413,7 +450,7 @@ router.patch("/:id", (req, res) => {
 });
 
 // DELETE /api/v1/media/:id (SOFT DELETE -> Recycle Bin)
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const store = loadFallbackStore();
@@ -428,6 +465,16 @@ router.delete("/:id", (req, res) => {
     media.deleted_by = req.body?.deletedBy || "admin";
 
     saveFallbackStore(store);
+
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query(
+          "UPDATE media SET is_trashed = TRUE, deleted_at = NOW(), deleted_by = ? WHERE id = ?",
+          [media.deleted_by || "admin", media.id]
+        );
+      } catch (_) {}
+    }
     const usage = calculateMediaUsage(media.url, store);
 
     return res.json({
@@ -442,7 +489,7 @@ router.delete("/:id", (req, res) => {
 });
 
 // POST /api/v1/media/:id/restore (RESTORE from Recycle Bin)
-router.post("/:id/restore", (req, res) => {
+router.post("/:id/restore", async (req, res) => {
   const { id } = req.params;
   try {
     const store = loadFallbackStore();
@@ -457,6 +504,16 @@ router.post("/:id/restore", (req, res) => {
     media.deleted_by = null;
 
     saveFallbackStore(store);
+
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query(
+          "UPDATE media SET is_trashed = FALSE, deleted_at = NULL, deleted_by = NULL WHERE id = ?",
+          [media.id]
+        );
+      } catch (_) {}
+    }
     return res.json({
       success: true,
       message: `Media "${media.originalName || media.filename}" restored to library.`,
@@ -468,7 +525,7 @@ router.post("/:id/restore", (req, res) => {
 });
 
 // DELETE /api/v1/media/:id/permanent (PERMANENT DELETE)
-router.delete("/:id/permanent", (req, res) => {
+router.delete("/:id/permanent", async (req, res) => {
   const { id } = req.params;
   try {
     const store = loadFallbackStore();
@@ -501,6 +558,13 @@ router.delete("/:id/permanent", (req, res) => {
     // Remove from database
     store.media.splice(idx, 1);
     saveFallbackStore(store);
+
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query("DELETE FROM media WHERE id = ?", [media.id]);
+      } catch (_) {}
+    }
 
     return res.json({
       success: true,

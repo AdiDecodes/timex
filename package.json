@@ -8,6 +8,7 @@
     "server": "node server/index.js",
     "seed": "node server/seed-products.js",
     "migrate:data": "node server/scripts/merge-production-data.js",
+    "migrate:mysql": "node server/scripts/sync-store-to-mysql.js",
     "build": "next build --webpack && node scripts/build-dist.js",
     "start": "next start",
     "lint": "eslint"

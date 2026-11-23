@@ -879,6 +879,163 @@ async function initSchemaAndSeed(dbPool) {
         INDEX idx_active (is_active),
         INDEX idx_order (display_order)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+      -- 9. Unified Categories
+      CREATE TABLE IF NOT EXISTS categories (
+        id VARCHAR(64) NOT NULL PRIMARY KEY,
+        name VARCHAR(150) NOT NULL,
+        slug VARCHAR(150) NOT NULL UNIQUE,
+        description TEXT NULL,
+        banner VARCHAR(500) NULL,
+        parent_id VARCHAR(64) NULL,
+        media_id VARCHAR(64) NULL,
+        status VARCHAR(50) NOT NULL DEFAULT 'published',
+        display_order INT NOT NULL DEFAULT 1,
+        seo_title VARCHAR(255) NULL,
+        meta_description TEXT NULL,
+        focus_keyword VARCHAR(255) NULL,
+        canonical_url VARCHAR(255) NULL,
+        og_title VARCHAR(255) NULL,
+        og_description TEXT NULL,
+        og_image VARCHAR(500) NULL,
+        twitter_title VARCHAR(255) NULL,
+        twitter_description TEXT NULL,
+        twitter_image VARCHAR(500) NULL,
+        twitter_card VARCHAR(50) NOT NULL DEFAULT 'summary_large_image',
+        schema_type VARCHAR(100) NULL,
+        schema_json LONGTEXT NULL,
+        custom_code LONGTEXT NULL,
+        show_in_nav BOOLEAN NOT NULL DEFAULT TRUE,
+        show_in_explore BOOLEAN NOT NULL DEFAULT TRUE,
+        show_in_world_of_tiles BOOLEAN NOT NULL DEFAULT TRUE,
+        redirect_urls_json TEXT NULL,
+        is_trashed BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_cat_slug (slug),
+        INDEX idx_cat_trashed (is_trashed),
+        INDEX idx_cat_order (display_order)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+      -- 10. Spaces (Architectural Applications)
+      CREATE TABLE IF NOT EXISTS spaces (
+        id VARCHAR(64) NOT NULL PRIMARY KEY,
+        name VARCHAR(150) NOT NULL,
+        slug VARCHAR(150) NOT NULL UNIQUE,
+        space_area VARCHAR(150) NULL,
+        page_title VARCHAR(255) NULL,
+        description TEXT NULL,
+        image VARCHAR(500) NULL,
+        media_id VARCHAR(64) NULL,
+        status VARCHAR(50) NOT NULL DEFAULT 'published',
+        display_order INT NOT NULL DEFAULT 1,
+        seo_title VARCHAR(255) NULL,
+        meta_description TEXT NULL,
+        focus_keyword VARCHAR(255) NULL,
+        secondary_keywords TEXT NULL,
+        canonical_url VARCHAR(255) NULL,
+        robots_index BOOLEAN NOT NULL DEFAULT TRUE,
+        robots_follow BOOLEAN NOT NULL DEFAULT TRUE,
+        og_title VARCHAR(255) NULL,
+        og_description TEXT NULL,
+        og_image VARCHAR(500) NULL,
+        schema_type VARCHAR(100) NULL,
+        schema_data LONGTEXT NULL,
+        seo_score INT NOT NULL DEFAULT 80,
+        is_trashed BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_space_slug (slug),
+        INDEX idx_space_trashed (is_trashed),
+        INDEX idx_space_order (display_order)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+      -- 11. Collections
+      CREATE TABLE IF NOT EXISTS collections (
+        id VARCHAR(64) NOT NULL PRIMARY KEY,
+        name VARCHAR(150) NOT NULL,
+        slug VARCHAR(150) NOT NULL UNIQUE,
+        description TEXT NULL,
+        image VARCHAR(500) NULL,
+        display_order INT NOT NULL DEFAULT 1,
+        is_active BOOLEAN NOT NULL DEFAULT TRUE,
+        is_trashed BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_coll_slug (slug),
+        INDEX idx_coll_trashed (is_trashed)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+      -- 12. Media Library
+      CREATE TABLE IF NOT EXISTS media (
+        id VARCHAR(64) NOT NULL PRIMARY KEY,
+        filename VARCHAR(255) NOT NULL,
+        original_name VARCHAR(255) NULL,
+        url VARCHAR(500) NOT NULL,
+        mime_type VARCHAR(100) NULL,
+        file_type VARCHAR(50) NULL DEFAULT 'image',
+        size BIGINT NOT NULL DEFAULT 0,
+        dimensions VARCHAR(50) NULL,
+        uploaded_by VARCHAR(100) NULL DEFAULT 'admin',
+        alt_text VARCHAR(255) NULL,
+        caption TEXT NULL,
+        is_trashed BOOLEAN NOT NULL DEFAULT FALSE,
+        deleted_at TIMESTAMP NULL,
+        deleted_by VARCHAR(100) NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_media_url (url),
+        INDEX idx_media_trashed (is_trashed)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+      -- 13. Videos
+      CREATE TABLE IF NOT EXISTS videos (
+        id VARCHAR(64) NOT NULL PRIMARY KEY,
+        display_order INT NOT NULL DEFAULT 1,
+        platform VARCHAR(50) NOT NULL DEFAULT 'YouTube',
+        post_type VARCHAR(50) NOT NULL DEFAULT 'Short',
+        url VARCHAR(500) NOT NULL,
+        video_id VARCHAR(100) NULL,
+        shortcode VARCHAR(100) NULL,
+        categories_json TEXT NULL,
+        thumbnail VARCHAR(500) NULL,
+        hq_thumbnail VARCHAR(500) NULL,
+        embed_url VARCHAR(500) NULL,
+        status VARCHAR(50) NOT NULL DEFAULT 'published',
+        is_trashed BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_video_trashed (is_trashed),
+        INDEX idx_video_order (display_order)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+      -- 14. Managed Pages
+      CREATE TABLE IF NOT EXISTS pages (
+        id VARCHAR(64) NOT NULL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        slug VARCHAR(150) NOT NULL UNIQUE,
+        path VARCHAR(255) NOT NULL,
+        template VARCHAR(100) NULL,
+        status VARCHAR(50) NOT NULL DEFAULT 'Published',
+        meta_title VARCHAR(255) NULL,
+        meta_description TEXT NULL,
+        content_json LONGTEXT NULL,
+        is_trashed BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_page_slug (slug),
+        INDEX idx_page_trashed (is_trashed)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+      -- 15. Site Settings (Key-Value)
+      CREATE TABLE IF NOT EXISTS site_settings (
+        id VARCHAR(64) NOT NULL PRIMARY KEY,
+        setting_key VARCHAR(100) NOT NULL UNIQUE,
+        setting_value LONGTEXT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_setting_key (setting_key)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
     // Check and seed initial colors if table is empty
@@ -960,6 +1117,87 @@ async function initSchemaAndSeed(dbPool) {
     } catch (_) {}
     try {
       await dbPool.query("ALTER TABLE products ADD COLUMN color_hexes_json LONGTEXT NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN is_trashed BOOLEAN NOT NULL DEFAULT FALSE");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN available_sizes_json LONGTEXT NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN color_images_json LONGTEXT NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN size_images_json LONGTEXT NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN spaces_json LONGTEXT NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN tiles_by_space VARCHAR(500) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN combination_images_json LONGTEXT NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN combination_product_mappings_json LONGTEXT NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN edge_type VARCHAR(100) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN weight VARCHAR(50) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN kg_per_box VARCHAR(50) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN pcs_per_box VARCHAR(50) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN packing_details VARCHAR(100) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN sft_per_box VARCHAR(50) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN shape VARCHAR(100) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN shapes_json LONGTEXT NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN tiles_by_shape VARCHAR(100) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN custom_shape VARCHAR(100) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN tiles_by_size VARCHAR(100) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN catalogue_url VARCHAR(500) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN catalogue_name VARCHAR(255) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN catalogue_media_id VARCHAR(100) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN product_pdf VARCHAR(500) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN video_url VARCHAR(500) NULL");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN video_position INT NOT NULL DEFAULT 1");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN video_enabled BOOLEAN NOT NULL DEFAULT FALSE");
+    } catch (_) {}
+    try {
+      await dbPool.query("ALTER TABLE products ADD COLUMN extra_specs_json LONGTEXT NULL");
     } catch (_) {}
 
     // Check and seed initial products if table is empty
@@ -1083,6 +1321,74 @@ async function initSchemaAndSeed(dbPool) {
       }
       console.log(`[Database] Seeded ${initialSeo.length} initial SEO records into MySQL`);
     }
+
+    // Check and seed initial categories if table is empty
+    try {
+      const [catRows] = await dbPool.query("SELECT COUNT(*) AS count FROM categories");
+      if (catRows[0].count === 0) {
+        const store = loadFallbackStore();
+        const initialCats = store.custom_categories || [];
+        for (const c of initialCats) {
+          if (!c.id || !c.slug) continue;
+          try {
+            await dbPool.query(
+              `INSERT IGNORE INTO categories (
+                id, name, slug, description, banner, parent_id, media_id, status, display_order,
+                seo_title, meta_description, focus_keyword, canonical_url, og_title, og_description,
+                og_image, twitter_title, twitter_description, twitter_image, twitter_card,
+                schema_type, schema_json, custom_code, show_in_nav, show_in_explore, show_in_world_of_tiles,
+                redirect_urls_json, is_trashed
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              [
+                c.id, c.name, c.slug, c.description || "", c.banner || "", c.parentId || null,
+                c.mediaId || null, c.status || "published", c.order || 1,
+                c.seoTitle || c.name, c.metaDescription || c.description || "", c.focusKeyword || "",
+                c.canonicalUrl || `/product-category/${c.slug}`, c.ogTitle || c.seoTitle || "",
+                c.ogDescription || c.metaDescription || "", c.ogImage || "", c.twitterTitle || "",
+                c.twitterDescription || "", c.twitterImage || "", c.twitterCard || "summary_large_image",
+                c.schemaType || "CollectionPage", c.schemaJson || "", c.customCode || "",
+                c.showInNav !== false, c.showInExplore !== false, c.showInWorldOfTiles !== false,
+                JSON.stringify(c.redirectUrls || []), Boolean(c.is_trashed)
+              ]
+            );
+          } catch (_) {}
+        }
+        console.log(`[Database] Seeded ${initialCats.length} initial categories into MySQL`);
+      }
+    } catch (_) {}
+
+    // Check and seed initial spaces if table is empty
+    try {
+      const [spaceRows] = await dbPool.query("SELECT COUNT(*) AS count FROM spaces");
+      if (spaceRows[0].count === 0) {
+        const store = loadFallbackStore();
+        const initialSpaces = store.tiles_by_space || [];
+        for (const sp of initialSpaces) {
+          if (!sp.id || !sp.slug) continue;
+          try {
+            await dbPool.query(
+              `INSERT IGNORE INTO spaces (
+                id, name, slug, space_area, page_title, description, image, media_id,
+                status, display_order, seo_title, meta_description, focus_keyword,
+                secondary_keywords, canonical_url, robots_index, robots_follow,
+                og_title, og_description, og_image, schema_type, schema_data, seo_score, is_trashed
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              [
+                sp.id, sp.name, sp.slug, sp.spaceArea || sp.name, sp.pageTitle || sp.name,
+                sp.description || "", sp.image || "", sp.mediaId || null, sp.status || "published",
+                sp.order || 1, sp.seoTitle || sp.name, sp.metaDescription || sp.description || "",
+                sp.focusKeyword || "", sp.secondaryKeywords || "", sp.canonicalUrl || `/${sp.slug}`,
+                sp.robotsIndex !== false, sp.robotsFollow !== false, sp.ogTitle || sp.seoTitle || "",
+                sp.ogDescription || sp.metaDescription || "", sp.ogImage || sp.image || "",
+                sp.schemaType || "CollectionPage", sp.schemaData || "", sp.seoScore || 80,
+                Boolean(sp.is_trashed)
+              ]
+            );
+          } catch (_) {}
+        }
+        console.log(`[Database] Seeded ${initialSpaces.length} initial spaces into MySQL`);
+      }
+    } catch (_) {}
   } catch (schemaErr) {
     console.warn("[Database] Schema check / auto-seed notice:", schemaErr.message);
   }

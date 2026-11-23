@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { loadFallbackStore, saveFallbackStore } = require("../config/db");
+const { getPool, isMysqlConnected, loadFallbackStore, saveFallbackStore } = require("../config/db");
 
 function extractYouTubeId(url) {
   const m = url.match(/(?:shorts\/|v\/|watch\?v=|embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -72,7 +72,7 @@ router.get("/:id", (req, res) => {
 });
 
 // POST /api/v1/videos (Add new video)
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { url, categories = ["PRODUCT HIGHLIGHTS"], status = "published" } = req.body;
     if (!url || typeof url !== "string") {
@@ -159,6 +159,33 @@ router.post("/", (req, res) => {
     store.videos.push(newEntry);
     saveFallbackStore(store);
 
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query(
+          `INSERT INTO videos (
+            id, display_order, platform, post_type, url, video_id, shortcode,
+            categories_json, thumbnail, hq_thumbnail, embed_url, status, is_trashed, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+          ON DUPLICATE KEY UPDATE
+            display_order = VALUES(display_order), platform = VALUES(platform),
+            post_type = VALUES(post_type), url = VALUES(url), video_id = VALUES(video_id),
+            shortcode = VALUES(shortcode), categories_json = VALUES(categories_json),
+            thumbnail = VALUES(thumbnail), hq_thumbnail = VALUES(hq_thumbnail),
+            embed_url = VALUES(embed_url), status = VALUES(status),
+            is_trashed = VALUES(is_trashed), updated_at = NOW()`,
+          [
+            newEntry.id, newEntry.order || 1, newEntry.platform || "YouTube", newEntry.post_type || "Short",
+            newEntry.url, newEntry.video_id || null, newEntry.shortcode || null, JSON.stringify(newEntry.categories || []),
+            newEntry.thumbnail || null, newEntry.hq_thumbnail || null, newEntry.embed_url || null,
+            newEntry.status || "published", false
+          ]
+        );
+      } catch (dbErr) {
+        console.warn("[Database] Could not sync video to MySQL:", dbErr.message);
+      }
+    }
+
     return res.status(201).json({ success: true, data: newEntry });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
@@ -166,7 +193,7 @@ router.post("/", (req, res) => {
 });
 
 // PUT /api/v1/videos/:id (Update video)
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const store = loadFallbackStore();
     store.videos = Array.isArray(store.videos) ? store.videos : [];
@@ -187,6 +214,18 @@ router.put("/:id", (req, res) => {
     store.videos[idx] = current;
     saveFallbackStore(store);
 
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query(
+          `UPDATE videos SET
+            display_order = ?, categories_json = ?, status = ?, updated_at = NOW()
+           WHERE id = ?`,
+          [current.order || 1, JSON.stringify(current.categories || []), current.status || "published", current.id]
+        );
+      } catch (_) {}
+    }
+
     return res.json({ success: true, data: current });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
@@ -194,7 +233,7 @@ router.put("/:id", (req, res) => {
 });
 
 // DELETE /api/v1/videos/:id (Soft delete)
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const store = loadFallbackStore();
     store.videos = Array.isArray(store.videos) ? store.videos : [];
@@ -207,6 +246,13 @@ router.delete("/:id", (req, res) => {
     store.videos[idx].is_trashed = true;
     store.videos[idx].updated_at = new Date().toISOString();
     saveFallbackStore(store);
+
+    if (isMysqlConnected()) {
+      try {
+        const pool = getPool();
+        await pool.query("UPDATE videos SET is_trashed = TRUE, updated_at = NOW() WHERE id = ?", [req.params.id]);
+      } catch (_) {}
+    }
 
     return res.json({ success: true, message: "Video moved to trash" });
   } catch (err) {

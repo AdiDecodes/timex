@@ -147,7 +147,16 @@ router.post("/restore", async (req, res) => {
       prod.is_active = true;
       prod.deleted_at = null;
       prod.deleted_by = null;
-      // Note: no MySQL trash columns; the row was never flagged in MySQL.
+
+      if (isMysqlConnected()) {
+        try {
+          const pool = getPool();
+          await pool.query(
+            "UPDATE products SET is_trashed = FALSE, is_active = TRUE WHERE id = ? OR slug = ?",
+            [id, id]
+          );
+        } catch (_) {}
+      }
 
       // Restore any media attached to this product that were trashed
       if (Array.isArray(prod.images)) {
@@ -172,6 +181,16 @@ router.post("/restore", async (req, res) => {
       blog.status = "Published";
       blog.deleted_at = null;
       blog.deleted_by = null;
+
+      if (isMysqlConnected()) {
+        try {
+          const pool = getPool();
+          await pool.query(
+            "UPDATE blogs SET is_trashed = FALSE, status = 'Published' WHERE id = ? OR slug = ?",
+            [id, id]
+          );
+        } catch (_) {}
+      }
 
       // Restore cover image if it was trashed
       if (blog.coverImage) {
