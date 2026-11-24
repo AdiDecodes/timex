@@ -262,10 +262,17 @@ export function getCategoryThumbnail(categorySlug: string): string {
  * Resolve any image URL. If missing, undefined, or ending with .svg, replace with high-res photo.
  */
 export function resolveProductImage(
-  imageUrl?: string,
+  imageUrl?: any,
   categorySlug?: string,
   index: number = 0
 ): string {
+  if (Array.isArray(imageUrl)) {
+    imageUrl = imageUrl.find((x: any) => typeof x === "string" && x.trim()) || imageUrl[0];
+  }
+  if (typeof imageUrl !== "string") {
+    imageUrl = "";
+  }
+
   const isSvgOrMissing =
     !imageUrl ||
     imageUrl.trim() === "" ||

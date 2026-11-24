@@ -174,7 +174,7 @@ const TILE_STYLES: TileStyleCardData[] = [
     description:
       "Express your creativity through colourful ceramic tiles and artistic patterns. From vibrant accents to carefully coordinated palettes, these designs can bring personality and individuality to your interiors.",
     image:
-      "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=900&q=80",
+      "/uploads/products/Amb-Veracruz-15x15.webp",
     alt: "Vibrant and colourful artistic ceramic tile layout with creative glaze finishes",
     link: "/collections/colourful",
   },

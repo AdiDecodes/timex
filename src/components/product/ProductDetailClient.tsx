@@ -1549,7 +1549,11 @@ export function ProductDetailClient({ product: initialProduct, relatedProducts: 
                 </div>
                 <div className="flex flex-wrap gap-2.5">
                   {availableColors.map((color: string) => {
-                      const mappedImg = product.colorImages?.[color] || product.images?.find((img: string) => img.toLowerCase().includes(color.toLowerCase()));
+                      const rawCol = product.colorImages?.[color];
+                      const rawImg = Array.isArray(rawCol)
+                        ? rawCol.find((x: any) => typeof x === "string" && x.trim()) || rawCol[0]
+                        : rawCol;
+                      const mappedImg = rawImg || product.images?.find((img: string) => img.toLowerCase().includes(color.toLowerCase()));
                       const resolvedMapped = mappedImg ? resolveProductImage(mappedImg, product.categoryId, 0) : "";
                       const isSelected = selectedColor
                         ? selectedColor.toLowerCase() === color.toLowerCase()

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Card from "@/components/ui/Card";
@@ -24,6 +24,7 @@ export function CollectionProductGridClient({
   collectionName,
 }: CollectionProductGridClientProps) {
   const [products, setProducts] = useState<any[]>(initialProducts);
+  const [sortBy, setSortBy] = useState<"all" | "new" | "alphabetic">("all");
 
   // Sync with initialProducts when prop changes
   useEffect(() => {
@@ -31,6 +32,18 @@ export function CollectionProductGridClient({
       setProducts(initialProducts);
     }
   }, [initialProducts]);
+
+  // Derived sorted / filtered products based on active sort
+  const displayProducts = useMemo(() => {
+    const list = [...products];
+    if (sortBy === "alphabetic") {
+      return list.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    }
+    if (sortBy === "new") {
+      return list.filter((p) => p.isNewArrival || p.is_new_arrival);
+    }
+    return list;
+  }, [products, sortBy]);
 
   // Live Database Rehydration: ensures products added or edited in /admin reflect immediately
   useEffect(() => {
@@ -88,16 +101,52 @@ export function CollectionProductGridClient({
           </h2>
         </div>
 
-        <Link href={`/products?category=${collectionSlug}`}>
-          <Button variant="outline" size="sm" className="text-[11px] tracking-wider uppercase font-medium flex items-center space-x-2 border-[#333333] text-[#101B38] hover:bg-[#101B38] hover:text-[#FCFBF8] rounded-[2px]">
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>Filter Catalog</span>
-          </Button>
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Quick Sort Bar: All | New Arrivals | Alphabetic */}
+          <div className="inline-flex items-center rounded border border-[#EDEAE4] bg-white p-1 shadow-xs">
+            <button
+              onClick={() => setSortBy("all")}
+              className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${
+                sortBy === "all"
+                  ? "bg-[#101B38] text-[#FCFBF8]"
+                  : "text-[#333333] hover:text-[#101B38]"
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setSortBy("new")}
+              className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${
+                sortBy === "new"
+                  ? "bg-[#101B38] text-[#FCFBF8]"
+                  : "text-[#333333] hover:text-[#101B38]"
+              }`}
+            >
+              New Arrivals
+            </button>
+            <button
+              onClick={() => setSortBy("alphabetic")}
+              className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${
+                sortBy === "alphabetic"
+                  ? "bg-[#101B38] text-[#FCFBF8]"
+                  : "text-[#333333] hover:text-[#101B38]"
+              }`}
+            >
+              Alphabetic
+            </button>
+          </div>
+
+          <Link href={`/products?category=${collectionSlug}`}>
+            <Button variant="outline" size="sm" className="text-[11px] tracking-wider uppercase font-medium flex items-center space-x-2 border-[#333333] text-[#101B38] hover:bg-[#101B38] hover:text-[#FCFBF8] rounded-[2px]">
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span>Filter Catalog</span>
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      <div className={`grid grid-cols-1 ${products.length <= 2 ? "md:grid-cols-2 max-w-4xl mx-auto" : "md:grid-cols-2 lg:grid-cols-3"} gap-6 md:gap-8`}>
-        {(Array.isArray(products) ? products : []).map((prod) => (
+      <div className={`grid grid-cols-1 ${displayProducts.length <= 2 ? "md:grid-cols-2 max-w-4xl mx-auto" : "md:grid-cols-2 lg:grid-cols-3"} gap-6 md:gap-8`}>
+        {displayProducts.map((prod) => (
           <ProductCard key={prod.id || prod.slug} product={prod} />
         ))}
       </div>
