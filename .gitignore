@@ -21,10 +21,12 @@ scratch/
 server/data/store.backup_*
 .commandcode/
 
+
 # Large media served directly from the VPS (excluded from deploys as well)
 public/uploads/
 public/catalogue/
 public/catalogues/
+server/data/store.json
 
 # Logs & OS junk
 *.log

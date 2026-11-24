@@ -36,11 +36,11 @@ async function runSync() {
   console.log(`  - Colors: ${(store.colors || []).length}`);
   console.log(`  - SEO Records: ${(store.seo_metadata || []).length}\n`);
 
-  let host = process.env.MYSQL_HOST || "localhost";
-  let user = process.env.MYSQL_USER || "root";
-  let password = process.env.MYSQL_PASSWORD || "";
-  let database = process.env.MYSQL_DATABASE || "timex_ceramic";
-  let port = parseInt(process.env.MYSQL_PORT || "3306", 10);
+  let host = process.env.MYSQL_HOST || process.env.DB_HOST || "localhost";
+  let user = process.env.MYSQL_USER || process.env.DB_USER || "root";
+  let password = process.env.MYSQL_PASSWORD || process.env.DB_PASSWORD || "";
+  let database = process.env.MYSQL_DATABASE || process.env.DB_NAME || "timex_ceramic";
+  let port = parseInt(process.env.MYSQL_PORT || process.env.DB_PORT || "3306", 10);
   let ssl = undefined;
 
   if (process.env.DATABASE_URL) {
@@ -84,18 +84,26 @@ async function runSync() {
     const schemaSqlPath = path.resolve(__dirname, "../schema_full_production.sql");
     if (fs.existsSync(schemaSqlPath)) {
       const sqlContent = fs.readFileSync(schemaSqlPath, "utf8");
-      // Split statements and run safely
+      // Strip line comments (-- ...) and split statements safely
       const statements = sqlContent
         .split(";")
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0 && !s.startsWith("--") && !s.startsWith("/*"));
+        .map((s) => s.replace(/--.*$/gm, "").trim())
+        .filter((s) => s.length > 0 && !s.toUpperCase().startsWith("CREATE DATABASE") && !s.toUpperCase().startsWith("USE "));
 
       for (const stmt of statements) {
         try {
           await connection.query(stmt);
         } catch (stmtErr) {
-          // Ignore duplicate column errors or harmless warnings
-          if (!stmtErr.message.includes("Duplicate column") && !stmtErr.message.includes("already exists")) {
+          if (stmt.toUpperCase().includes("ADD COLUMN IF NOT EXISTS")) {
+            try {
+              const cleanedStmt = stmt.replace(/ADD COLUMN IF NOT EXISTS/gi, "ADD COLUMN");
+              await connection.query(cleanedStmt);
+            } catch (innerErr) {
+              if (!innerErr.message.includes("Duplicate column") && !innerErr.message.includes("already exists") && !innerErr.message.includes("Duplicate key")) {
+                console.warn(`  [Schema Notice] ${innerErr.message}`);
+              }
+            }
+          } else if (!stmtErr.message.includes("Duplicate column") && !stmtErr.message.includes("already exists") && !stmtErr.message.includes("Duplicate key")) {
             console.warn(`  [Schema Notice] ${stmtErr.message}`);
           }
         }
@@ -305,6 +313,12 @@ async function runSync() {
 
     // Phase 7: Sync Products with ALL Rich Columns
     console.log("[Phase 7] Syncing Products with Complete Specifications...");
+    // Drop unique constraints on sku and code if they exist (different tiles can legitimately share series codes)
+    try { await connection.query("ALTER TABLE `products` DROP INDEX `sku`"); } catch (_) {}
+    try { await connection.query("ALTER TABLE `products` DROP INDEX `code`"); } catch (_) {}
+    try { await connection.query("ALTER TABLE `products` DROP INDEX `sku_UNIQUE`"); } catch (_) {}
+    try { await connection.query("ALTER TABLE `products` DROP INDEX `code_UNIQUE`"); } catch (_) {}
+
     const products = store.products || [];
     let prodSynced = 0;
     for (const p of products) {

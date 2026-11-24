@@ -24,10 +24,10 @@ CREATE TABLE IF NOT EXISTS `admin_users` (
 -- 2. Products Table (Base)
 CREATE TABLE IF NOT EXISTS `products` (
   `id` VARCHAR(64) NOT NULL PRIMARY KEY,
-  `sku` VARCHAR(100) NOT NULL UNIQUE,
+  `sku` VARCHAR(100) NOT NULL,
   `slug` VARCHAR(255) NOT NULL UNIQUE,
   `name` VARCHAR(255) NOT NULL,
-  `code` VARCHAR(100) NOT NULL UNIQUE,
+  `code` VARCHAR(100) NOT NULL,
   `barcode` VARCHAR(100) NULL,
   `description` TEXT NULL,
   `price` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
@@ -195,7 +195,7 @@ CREATE TABLE IF NOT EXISTS `media` (
   `dimensions` VARCHAR(50) NULL,
   `uploaded_by` VARCHAR(100) NULL DEFAULT 'admin',
   `alt_text` VARCHAR(255) NULL,
-  `caption TEXT` NULL,
+  `caption` TEXT NULL,
   `is_trashed` BOOLEAN NOT NULL DEFAULT FALSE,
   `deleted_at` TIMESTAMP NULL,
   `deleted_by` VARCHAR(100) NULL,

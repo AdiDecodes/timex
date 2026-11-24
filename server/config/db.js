@@ -643,11 +643,11 @@ function saveFallbackStore(store) {
 
 // Attempt to initialize MySQL pool and schema
 async function initDb() {
-  let host = process.env.MYSQL_HOST || "localhost";
-  let user = process.env.MYSQL_USER || "root";
-  let password = process.env.MYSQL_PASSWORD || "";
-  let database = process.env.MYSQL_DATABASE || "timex_ceramic";
-  let port = parseInt(process.env.MYSQL_PORT || "3306", 10);
+  let host = process.env.MYSQL_HOST || process.env.DB_HOST || "localhost";
+  let user = process.env.MYSQL_USER || process.env.DB_USER || "root";
+  let password = process.env.MYSQL_PASSWORD || process.env.DB_PASSWORD || "";
+  let database = process.env.MYSQL_DATABASE || process.env.DB_NAME || "timex_ceramic";
+  let port = parseInt(process.env.MYSQL_PORT || process.env.DB_PORT || "3306", 10);
   let ssl = undefined;
 
   // Support standard DATABASE_URL format (e.g. mysql://user:pass@host:port/database)
